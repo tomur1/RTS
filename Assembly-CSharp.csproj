@@ -42,6 +42,7 @@
   </PropertyGroup>
   <ItemGroup>
      <Compile Include="Assets\Scripts\UnitsAndTechs\Placeable.cs" />
+     <Compile Include="Assets\Scripts\MainCameraMovement.cs" />
      <Compile Include="Assets\Scripts\Grid\GridMode.cs" />
      <Compile Include="Assets\Scripts\UnitsAndTechs\Unit.cs" />
      <Compile Include="Assets\Scripts\UnitsAndTechs\Building.cs" />
@@ -51,7 +52,6 @@
      <Compile Include="Assets\Scripts\GameMaster.cs" />
      <Compile Include="Assets\Scripts\UnitsAndTechs\TownCenter.cs" />
      <Compile Include="Assets\Scripts\UnitsAndTechs\Health.cs" />
-     <Compile Include="Assets\Scripts\MainCameraMovement.cs" />
      <None Include="Assets\TextMesh Pro\Shaders\TMPro.cginc" />
      <None Include="Assets\TextMesh Pro\Shaders\TMP_SDF-Mobile Overlay.shader" />
      <None Include="Assets\TextMesh Pro\Shaders\TMP_Bitmap.shader" />
@@ -667,6 +667,9 @@
      <Reference Include="Unity.TextMeshPro">
      <HintPath>C:/Users/tomur/Documents/Unity Projects/RTS/Library/ScriptAssemblies/Unity.TextMeshPro.dll</HintPath>
      </Reference>
+     <Reference Include="Unity.2D.Sprite.Editor">
+     <HintPath>C:/Users/tomur/Documents/Unity Projects/RTS/Library/ScriptAssemblies/Unity.2D.Sprite.Editor.dll</HintPath>
+     </Reference>
      <Reference Include="UnityEditor.UI">
      <HintPath>C:/Users/tomur/Documents/Unity Projects/RTS/Library/ScriptAssemblies/UnityEditor.UI.dll</HintPath>
      </Reference>
@@ -675,9 +678,6 @@
      </Reference>
      <Reference Include="UnityEngine.UI">
      <HintPath>C:/Users/tomur/Documents/Unity Projects/RTS/Library/ScriptAssemblies/UnityEngine.UI.dll</HintPath>
-     </Reference>
-     <Reference Include="Unity.2D.Sprite.Editor">
-     <HintPath>C:/Users/tomur/Documents/Unity Projects/RTS/Library/ScriptAssemblies/Unity.2D.Sprite.Editor.dll</HintPath>
      </Reference>
   </ItemGroup>
   <ItemGroup>
