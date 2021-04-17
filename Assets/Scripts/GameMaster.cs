@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnitsAndTechs;
 using UnityEngine;
 
@@ -8,11 +9,11 @@ public class GameMaster : MonoBehaviour
     private MyGrid grid;
     void Start()
     {
-        grid = new MyGrid(10, 10, 1, Vector3.zero);
+        grid = new MyGrid(100, 100, 1, Vector3.zero);
         grid.ShowLines();
         Debug.DrawLine(Vector3.zero, Vector3.one, Color.green, 100f, false);
-
-        TownCenter tc = new TownCenter();
+        MapCreator.FillGrid(grid);
+        MapCreator.InitMapObjects(grid);
     }
 
     private void Update()

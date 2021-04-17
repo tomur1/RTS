@@ -1,9 +1,14 @@
-﻿namespace DefaultNamespace
+﻿using UnityEngine;
+
+namespace DefaultNamespace
 {
-    public abstract class Unit : Placeable
+    public abstract class Unit : MonoBehaviour, IPlaceable
     {
-        public override GridMode GridMode => GridMode.passthrough;
-        private static int ConstructionMultiplier;
-        private const int GRIDMULTIPLIER = 1;
+        public Vector2 GridSize { get; set; }
+        GridMode IPlaceable.GridMode { get; set; }
+        public int GridMultiplier { get; set; }
+        public string AssetName { get; set; }
+        public Vector2Int LeftTopCellCoord { get; set; }
+        public abstract int ConstructionMultiplier { get; set; }
     }
 }

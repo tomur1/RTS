@@ -1,14 +1,40 @@
-﻿public class Cell
+﻿using System.Collections.Generic;
+using UnityEngine;
+
+public class Cell
 {
-    public Cell(Placeable element)
+    public List<IPlaceable> Elements { get; set; }
+    public Vector2 GridPosition { get; set; }
+    public Cell(Vector2 gridPosition, List<IPlaceable> elements)
     {
-        Element = element;
+        GridPosition = gridPosition;
+        Elements = elements;
     }
     
-    public Cell()
+    public Cell(Vector2 gridPosition, IPlaceable element)
     {
-        Element = null;
+        GridPosition = gridPosition;
+        Elements = new List<IPlaceable>();
+        Elements.Add(element);
+    }
+    
+    public Cell(Vector2 gridPosition)
+    {
+        GridPosition = gridPosition;
+        Elements = new List<IPlaceable>();
     }
 
-    public Placeable Element { get; set; }
+    // TODO If the performance is low then change this logic
+    public bool canPass()
+    {
+        foreach (var element in Elements)
+        {
+            if (element.GridMode == GridMode.blocking)
+            {
+                return false;
+            }    
+        }
+        return true;
+    }
+    
 }

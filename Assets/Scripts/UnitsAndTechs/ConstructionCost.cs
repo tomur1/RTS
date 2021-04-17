@@ -1,6 +1,6 @@
 ﻿public class ConstructionCost
 {
-    // How much material is neede to construct/research
+    // How much material is needed to construct/research
     private int Metal;
     private int Oil;
     private int Uranium;
