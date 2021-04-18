@@ -51,7 +51,7 @@ public class MapCreator : MonoBehaviour
         foreach (var element in grid.ElementsOnMap)
         {
             var elemetUnityObject = Resources.Load<GameObject>(element.AssetName);
-            Instantiate(elemetUnityObject, grid.GetWorldPos(element.LeftTopCellCoord.x, element.LeftTopCellCoord.y), Quaternion.identity);
+            Instantiate(elemetUnityObject, grid.GetWorldPos(element.LeftTopCellCoord.x, element.LeftTopCellCoord.y) + new Vector3(element.GridSize.x + 1, 0, element.GridSize.y + 1)/2, Quaternion.identity);
         }
     }
 }

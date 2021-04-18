@@ -9,6 +9,18 @@
     // How hard is it to construct/research this?
     private int ConstructionDifficulty;
 
+    public int Metal1 => Metal;
+
+    public int Oil1 => Oil;
+
+    public int Uranium1 => Uranium;
+
+    public int Energy1 => Energy;
+
+    public int Science1 => Science;
+
+    public int ConstructionDifficulty1 => ConstructionDifficulty;
+
     public ConstructionCost(int metal, int oil, int uranium, int energy, int science, int constructionDifficulty)
     {
         Metal = metal;
