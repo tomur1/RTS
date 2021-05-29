@@ -18,5 +18,9 @@ public class UraniumSource : IPlaceable
         GridMode = GridMode.blocking;
         AssetName = "Map Resources/Uranium Resource";
         LeftTopCellCoord = leftTopCellCoord;
+        
+        var mapElement = GameMaster.Instance.AddElementToGrid(this);
+        var component = mapElement.GetComponent<UraniumUnity>();
+        component.Uranium = this;
     }
 }

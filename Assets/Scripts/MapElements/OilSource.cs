@@ -17,5 +17,10 @@ public class OilSource : IPlaceable
         GridMode = GridMode.blocking;
         AssetName = "Map Resources/Oil Resource";
         LeftTopCellCoord = leftTopCellCoord;
+        
+        var mapElement = GameMaster.Instance.AddElementToGrid(this);
+        var component = mapElement.GetComponent<OilUnity>();
+        component.Oil = this;
     }
+    
 }

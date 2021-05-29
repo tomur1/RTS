@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace UnitsAndTechs.Units
 {
-    public abstract class Unit : MonoBehaviour, IPlaceable
+    public abstract class Unit : IPlaceable
     {
         public abstract Vector2 GridSize { get; set; }
 

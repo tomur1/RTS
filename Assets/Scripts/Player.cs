@@ -4,7 +4,7 @@ using DefaultNamespace;
 using UnitsAndTechs.Units;
 using UnityEngine;
 
-public class Player : MonoBehaviour
+public class Player
 {
     private List<Building> buildings;
 
@@ -52,7 +52,7 @@ public class Player : MonoBehaviour
 
     private float unitTrainingSpeed = 10;
     
-    Player(Color color)
+    public Player(Color color)
     {
         buildings = new List<Building>();
         units = new List<Unit>();

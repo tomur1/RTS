@@ -9,7 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 9165035630905083598}
-  - component: {fileID: 2595417581408831155}
+  - component: {fileID: 452077430379193813}
   m_Layer: 0
   m_Name: Town Center
   m_TagString: Untagged
@@ -36,7 +36,7 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &2595417581408831155
+--- !u!114 &452077430379193813
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -45,9 +45,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 9165035630905083597}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 88e5a5fd5e644ea4b6474cb2b9c25469, type: 3}
+  m_Script: {fileID: 11500000, guid: 8fa6f45631636424ebbbd2ccb54cf779, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  TownCenter: {fileID: 0}
 --- !u!1 &9165035631230163949
 GameObject:
   m_ObjectHideFlags: 0

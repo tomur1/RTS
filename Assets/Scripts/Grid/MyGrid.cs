@@ -81,6 +81,12 @@ public class MyGrid
             {
                 Debug.DrawLine(GetWorldPos(i,j), GetWorldPos(i,j+1), Color.blue, 100f);
                 Debug.DrawLine(GetWorldPos(i,j), GetWorldPos(i+1,j), Color.blue, 100f);
+                var cell = GetCellWithCoord( new Vector2Int(i,j));
+                if (!cell.canPass())
+                {
+                    Debug.DrawLine(GetWorldPos(i,j), GetWorldPos(i+1,j+1), Color.red, 100f);
+                    Debug.DrawLine(GetWorldPos(i,j+1), GetWorldPos(i+1,j), Color.red, 100f);
+                }
             }
         }
         Debug.DrawLine(GetWorldPos(0,height), GetWorldPos(width,height), Color.blue, 100f);
@@ -92,6 +98,7 @@ public class MyGrid
         if (!CanPlace(elementToAdd))
         {
             throw new IndexOutOfRangeException(elementToAdd + " Cannot be placed here");
+            return;
         }
         
         var takenCoords = CoordsTakenByElement(elementToAdd);

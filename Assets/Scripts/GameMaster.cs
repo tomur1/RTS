@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using DefaultNamespace;
 using UnitsAndTechs;
 using UnityEngine;
 
@@ -12,8 +13,12 @@ public class GameMaster : MonoBehaviour
     public GameObject DebugPrefab;
     public GameObject DebugStartPos;
     public GameObject DebugEndPos;
+    public GuiManager GuiManager;
+    public SelectionManager SelectionManager;
+    public NormalInputHandler NormalInputHandler;
     private List<GameObject> DebugObjects;
-    
+    public Mode mode;
+
     private void Awake()
     {
         if (Instance == null)
@@ -29,13 +34,29 @@ public class GameMaster : MonoBehaviour
     void Start()
     {
         grid = new MyGrid(100, 100, 1, Vector3.zero);
+        mode = Mode.Normal;
         DebugObjects = new List<GameObject>();
-        grid.ShowLines();
-        Debug.DrawLine(Vector3.zero, Vector3.one, Color.green, 100f, false);
-        MapCreator.FillGrid(grid);
-        MapCreator.InitMapObjects(grid);
+        SelectionManager = new SelectionManager();
+        NormalInputHandler = FindObjectOfType<NormalInputHandler>();
+        GuiManager = FindObjectOfType<GuiManager>();
         new Pathfinding();
         
+        MapCreator.FillGrid(grid);
+        List<Player> players = new List<Player>();
+        players.Add(new Player(Color.blue));
+        MapCreator.SpawnPlayers(grid, players);
+        var tc = (IMenuContainer) players[0].Buildings[0];
+        GuiManager.SelectedObjectMenu.SwitchObject(tc);
+        grid.ShowLines();
+    }
+
+    public GameObject AddElementToGrid(IPlaceable elementToAdd)
+    
+    {
+        var elementUnityObject = Resources.Load<GameObject>(elementToAdd.AssetName);
+        grid.AddElement(elementToAdd);
+        return Instantiate(elementUnityObject, grid.GetWorldPos(elementToAdd.LeftTopCellCoord.x, elementToAdd.LeftTopCellCoord.y) +
+                                               new Vector3(elementToAdd.GridSize.x * elementToAdd.GridMultiplier, 0, elementToAdd.GridSize.y * elementToAdd.GridMultiplier)/2, Quaternion.identity);
     }
 
     public void CalcPathToDebug()
@@ -64,16 +85,33 @@ public class GameMaster : MonoBehaviour
 
     private void Update()
     {
+        switch (mode)
+        {
+            case Mode.Normal:
+                NormalInputHandler.Handle();
+                break;
+            case Mode.Placing:
+                PlacingInputHandle();
+                break;
+            case Mode.Paused:
+                PauseInputHandle();
+                break;
+        }
+    }
+
+    private void PlacingInputHandle()
+    {
         if (Input.GetMouseButtonDown(0))
         {
-            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-            RaycastHit hit;
-            if (Physics.Raycast(ray, out hit))
-            {
-                Debug.Log(grid.GetCellPos(hit.point));
-            }
-            
+            //Place the structure    
         }
-        
+    }
+
+    private void PauseInputHandle()
+    {
+        if (Input.GetMouseButtonDown(0))
+        {
+
+        }
     }
 }

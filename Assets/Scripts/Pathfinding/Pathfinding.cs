@@ -71,6 +71,11 @@ public class Pathfinding {
                 pathNode.gCost = 99999999;
                 pathNode.CalculateFCost();
                 pathNode.cameFromNode = null;
+                if (!GameMaster.Instance.grid.GetCellWithCoord(new Vector2Int(x,y)).canPass())
+                {
+                    pathNode.SetIsWalkable(false);
+                }
+                
             }
         }
 

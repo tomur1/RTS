@@ -11,6 +11,5 @@
         public int StartingAmount { get; }
         public int CurrentAmount { get; set; }
         
-        
     }
 }
