@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Reflection;
 using TMPro;
 using UnityEngine;
 using UnityEngine.Events;
@@ -36,7 +37,9 @@ public class SelectedObjectMenu : MonoBehaviour
 
     public UnityAction PerformButtonAction(String actionName)
     {
-        selectedObject.PerformAction(actionName);
+        Type thisType = selectedObject.GetType();
+        MethodInfo theMethod = thisType.GetMethod(actionName);
+        theMethod.Invoke(selectedObject, null);
         return null;
     } 
 }

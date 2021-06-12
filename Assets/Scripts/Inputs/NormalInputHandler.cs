@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using UnitsAndTechs;
 using UnityEngine;
 
 public class NormalInputHandler : MonoBehaviour
@@ -9,9 +10,6 @@ public class NormalInputHandler : MonoBehaviour
     RaycastHit hit;
 
     bool dragSelect;
-
-    //Collider variables
-    //=======================================================//
 
     MeshCollider selectionBox;
     Mesh selectionMesh;
@@ -126,6 +124,17 @@ public class NormalInputHandler : MonoBehaviour
             } //end marquee select
 
             dragSelect = false;
+        }
+
+        //4. Right click is released
+        if (Input.GetMouseButtonUp(1))
+        {
+            foreach (var pair in SelectionManager.selectedTable)
+            {
+                var element = pair.Value.GetComponent<IPlaceable>();
+            }
+            
+            
         }
     }
 

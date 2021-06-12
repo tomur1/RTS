@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using UnitsAndTechs;
 using UnityEngine;
 
 public class OilSource : IPlaceable
@@ -9,6 +10,11 @@ public class OilSource : IPlaceable
     public int GridMultiplier { get; set; }
     public string AssetName { get; set; }
     public Vector2Int LeftTopCellCoord { get; set; }
+    public ConstructionCost ConstructionCost { get; set; }
+    public void InitValues(Player player, Vector2Int coord)
+    {
+        
+    }
 
     public OilSource(Vector2Int leftTopCellCoord)
     {

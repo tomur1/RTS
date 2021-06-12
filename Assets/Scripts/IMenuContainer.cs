@@ -5,6 +5,5 @@ using UnityEngine;
 
 public interface IMenuContainer
 {
-    public void PerformAction(String action);
     public Dictionary<int ,ButtonSpec> GetButtonLayout();
 }

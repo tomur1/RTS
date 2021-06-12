@@ -13,7 +13,16 @@ namespace UnitsAndTechs.Units
 
         public string AssetName { get; set; }
         public Vector2Int LeftTopCellCoord { get; set; }
+        public ConstructionCost ConstructionCost { get; set; }
+        public abstract void InitValues(Player player, Vector2Int coord);
         public abstract int ConstructionMultiplier { get; set; }
         public Health Health { get; set; }
+        
+        public abstract Player Player { get; set; }
+
+        public void MoveTo(Cell cell)
+        {
+            
+        }
     }
 }

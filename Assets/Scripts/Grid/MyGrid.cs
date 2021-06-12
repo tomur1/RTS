@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using UnitsAndTechs;
 using UnityEngine;
 
 public class MyGrid
@@ -38,7 +39,7 @@ public class MyGrid
         {
             for (int j = 0; j < Height; j++)
             {
-                gridData[i, j] = new Cell(new Vector2(i, j));
+                gridData[i, j] = new Cell(new Vector2Int(i, j));
             }
         }
     }
@@ -110,14 +111,82 @@ public class MyGrid
         }
     }
 
+    public Cell FindClosestEmptyPos(IPlaceable element, Vector2Int targetCoord)
+    {
+        bool found = false;
+        Vector2Int currentCoord = targetCoord;
+        var steps = 1;
+        int direction = 1;
+        while (!found)
+        {
+            if (CanPlace(element, currentCoord))
+            {
+                break;
+            }
+
+            for (int i = 0; i < steps; i++)
+            {
+                //If we are going up
+                if (direction == 1)
+                {
+                    currentCoord += new Vector2Int(0, 1);
+                }else if (direction == 2)
+                {
+                    currentCoord += new Vector2Int(1, 0);
+                }else if (direction == 3)
+                {
+                    currentCoord += new Vector2Int(0, -1);
+                }else if (direction == 4)
+                {
+                    currentCoord += new Vector2Int(-1, 0);
+                }
+
+                if (CanPlace(element, currentCoord))
+                {
+                    return GetCellWithCoord(currentCoord);
+                }
+            }
+
+            direction++;
+            if (direction > 4)
+            {
+                direction = 1;
+            }
+
+        }
+
+        return GetCellWithCoord(currentCoord);
+    }
+
     public bool CanPlace(IPlaceable element)
     {
         var takenCoords = CoordsTakenByElement(element);
         foreach (var coord in takenCoords)
         {
             //Check if corner is on grid
-            if (coord.x >= Width || coord.x < 0 ||
-                coord.y >= Height || coord.y < 0)
+            if (!InBounds(coord))
+            {
+                return false;
+            }
+
+            var cell = GetCellWithCoord(coord);
+            if (!cell.canPass())
+            {
+                return false;
+            }
+        }
+        
+
+        return true;
+    }
+    
+    public bool CanPlace(IPlaceable element, Vector2Int wantedCoord)
+    {
+        var takenCoords = CoordsTakenByElement(element, wantedCoord);
+        foreach (var coord in takenCoords)
+        {
+            //Check if corner is on grid
+            if (!InBounds(coord))
             {
                 return false;
             }
@@ -147,5 +216,32 @@ public class MyGrid
         }
 
         return coordsTakenByElement;
+    }
+    
+    public List<Vector2Int> CoordsTakenByElement(IPlaceable element, Vector2Int wantedCoord)
+    {
+        List<Vector2Int> coordsTakenByElement = new List<Vector2Int>();
+        var cornerCoord = wantedCoord;
+        
+        for (int i = 0; i < element.GridMultiplier * element.GridSize.x; i++)
+        {
+            for (int j = 0; j < element.GridMultiplier * element.GridSize.y; j++)
+            {
+                coordsTakenByElement.Add(new Vector2Int(i + cornerCoord.x,j + cornerCoord.y));
+            }
+        }
+
+        return coordsTakenByElement;
+    }
+
+    public bool InBounds(Vector2Int coord)
+    {
+        if (coord.x >= Width || coord.x < 0 ||
+            coord.y >= Height || coord.y < 0)
+        {
+            return false;
+        }
+
+        return true;
     }
 }

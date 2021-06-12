@@ -12,8 +12,8 @@ public abstract class Building : IPlaceable
     
     public string AssetName { get; set; }
     public Vector2Int LeftTopCellCoord { get; set; }
-
-    public abstract ConstructionCost constructionCost { get; set; }
+    public ConstructionCost ConstructionCost { get; set; }
+    public abstract void InitValues(Player player, Vector2Int coord);
 
     public abstract Player Player { get; set; }
 

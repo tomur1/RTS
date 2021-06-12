@@ -1,24 +1,25 @@
 ﻿using System.Collections.Generic;
+using UnitsAndTechs;
 using UnityEngine;
 
 public class Cell
 {
     public List<IPlaceable> Elements { get; set; }
-    public Vector2 GridPosition { get; set; }
-    public Cell(Vector2 gridPosition, List<IPlaceable> elements)
+    public Vector2Int GridPosition { get; set; }
+    public Cell(Vector2Int gridPosition, List<IPlaceable> elements)
     {
         GridPosition = gridPosition;
         Elements = elements;
     }
     
-    public Cell(Vector2 gridPosition, IPlaceable element)
+    public Cell(Vector2Int gridPosition, IPlaceable element)
     {
         GridPosition = gridPosition;
         Elements = new List<IPlaceable>();
         Elements.Add(element);
     }
     
-    public Cell(Vector2 gridPosition)
+    public Cell(Vector2Int gridPosition)
     {
         GridPosition = gridPosition;
         Elements = new List<IPlaceable>();

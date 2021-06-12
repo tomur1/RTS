@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class SelectionManager
 {
-    public Dictionary<int, GameObject> selectedTable = new Dictionary<int, GameObject>();
+    public Dictionary<int, GameObject> selectedTable;
 
     public SelectionManager()
     {
@@ -18,7 +18,7 @@ public class SelectionManager
         if (!(selectedTable.ContainsKey(id)))
         {
             selectedTable.Add(id, go);
-            Debug.Log("Added " + id + " to selected dict");
+            Debug.Log("Added " + go.name + " to selected dict");
         }
     }
 

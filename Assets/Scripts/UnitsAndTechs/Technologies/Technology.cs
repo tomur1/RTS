@@ -23,7 +23,7 @@ public abstract class Technology : MonoBehaviour
         while (PercentResearched < 100)
         {
             yield return null;
-            PercentResearched += (player.ResearchSpeed / Cost.ConstructionDifficulty1) * Time.deltaTime;
+            PercentResearched += (player.ResearchSpeed / Cost.ConstructionDifficulty) * Time.deltaTime;
             //UpdateGui()
         }
         ResearchFinished();
