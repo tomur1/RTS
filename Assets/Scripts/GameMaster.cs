@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using DefaultNamespace;
 using UnitsAndTechs;
 using UnityEngine;
@@ -16,6 +17,7 @@ public class GameMaster : MonoBehaviour
     public GuiManager GuiManager;
     public SelectionManager SelectionManager;
     public NormalInputHandler NormalInputHandler;
+    public Camera mainCamera;
     private List<GameObject> DebugObjects;
     public Mode mode;
 
@@ -24,6 +26,7 @@ public class GameMaster : MonoBehaviour
         if (Instance == null)
         {
             Instance = this;
+            SelectionManager = new SelectionManager();
         }
         else
         {
@@ -36,18 +39,46 @@ public class GameMaster : MonoBehaviour
         grid = new MyGrid(100, 100, 1, Vector3.zero);
         mode = Mode.Normal;
         DebugObjects = new List<GameObject>();
-        SelectionManager = new SelectionManager();
+        
         NormalInputHandler = FindObjectOfType<NormalInputHandler>();
         GuiManager = FindObjectOfType<GuiManager>();
         new Pathfinding();
-        
         MapCreator.FillGrid(grid);
         List<Player> players = new List<Player>();
         players.Add(new Player(Color.blue));
         MapCreator.SpawnPlayers(grid, players);
         var tc = (IMenuContainer) players[0].Buildings[0];
-        GuiManager.SelectedObjectMenu.SwitchObject(tc);
+        //GuiManager.SelectedObjectMenu.SwitchObject(tc);
         grid.ShowLines();
+    }
+
+    public void SelectionChanged()
+    {
+        if (SelectionManager.selectedTable.Count == 0)
+        {
+            GuiManager.SelectedObjectInformation.EmptyView();
+            GuiManager.SelectedObjectMenu.EmptyView();
+            return;
+        }
+        //If there is more than 1 unit selected
+        if (SelectionManager.selectedTable.Count > 1)
+        {
+            GuiManager.MultipleObjectInformation.UpdateView(SelectionManager);
+        }else
+        {
+            var element = SelectionManager.selectedTable.ElementAt(0).Value;
+            if (element.GetComponent<WorkerUnity>() != null)
+            {
+                var worker = element.GetComponent<WorkerUnity>().Worker;
+                GuiManager.SelectedObjectInformation.UpdateView(worker);
+                GuiManager.SelectedObjectMenu.SwitchObject(worker);
+            }else if (element.GetComponent<TownCenterUnity>() != null)
+            {
+                var townCenter = element.GetComponent<TownCenterUnity>().TownCenter;
+                GuiManager.SelectedObjectInformation.UpdateView(townCenter);
+                GuiManager.SelectedObjectMenu.SwitchObject(townCenter);
+            }
+        }
     }
 
     public GameObject AddElementToGrid(IPlaceable elementToAdd)

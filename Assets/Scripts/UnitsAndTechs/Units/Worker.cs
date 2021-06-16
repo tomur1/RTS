@@ -5,7 +5,7 @@ using UnitsAndTechs;
 using UnitsAndTechs.Units;
 using UnityEngine;
 
-public class Worker : Unit
+public class Worker : Unit, IMenuContainer
 {
     public Worker()
     {
@@ -35,4 +35,26 @@ public class Worker : Unit
 
     public override int ConstructionMultiplier { get; set; }
     public override Player Player { get; set; }
+    private Dictionary<int, ButtonSpec> _buttonValuesSet;
+
+    public Dictionary<int, ButtonSpec> GetButtonLayout()
+    {
+        if (_buttonValuesSet != null)
+        {
+            return _buttonValuesSet;
+        }
+
+        Dictionary<int, ButtonSpec> buttons = new Dictionary<int, ButtonSpec>();
+
+        ButtonSpec worker = new ButtonSpec("Town Center", 0, "BuildTownCenter");
+        buttons.Add(worker.ButtonIdx, worker);
+
+        _buttonValuesSet = buttons;
+        return buttons;
+    }
+
+    public void BuildTownCenter()
+    {
+        
+    }
 }

@@ -99,7 +99,6 @@ public class MyGrid
         if (!CanPlace(elementToAdd))
         {
             throw new IndexOutOfRangeException(elementToAdd + " Cannot be placed here");
-            return;
         }
         
         var takenCoords = CoordsTakenByElement(elementToAdd);

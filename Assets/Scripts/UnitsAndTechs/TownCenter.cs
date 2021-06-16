@@ -50,19 +50,15 @@ namespace UnitsAndTechs
         {
             throw new NotImplementedException();
         }
-
-        public override Player Player { get; set; }
-        public override Health Health { get; set; }
-        
         public Vector2Int SpawnPoint { get; set; }
 
-        private Dictionary<int, ButtonSpec> ButtonValuesSet;
+        private Dictionary<int, ButtonSpec> _buttonValuesSet;
 
         public Dictionary<int, ButtonSpec> GetButtonLayout()
         {
-            if (ButtonValuesSet != null)
+            if (_buttonValuesSet != null)
             {
-                return ButtonValuesSet;
+                return _buttonValuesSet;
             }
 
             Dictionary<int, ButtonSpec> buttons = new Dictionary<int, ButtonSpec>();
@@ -70,6 +66,7 @@ namespace UnitsAndTechs
             ButtonSpec worker = new ButtonSpec("Worker", 0, "CreateWorker");
             buttons.Add(worker.ButtonIdx, worker);
 
+            _buttonValuesSet = buttons;
             return buttons;
         }
 
@@ -89,7 +86,6 @@ namespace UnitsAndTechs
                 Debug.Log("Constructing: " + constructionCost.ConstructionPoints + " out of " + constructionCost.ConstructionDifficulty);
             }
             
-            //OMG CHANGE THIS TO SOMETHING RESONABLE
             unit.InitValues(Player, GameMaster.Instance.grid.FindClosestEmptyPos(unit, SpawnPoint).GridPosition);
         }
 

@@ -38,6 +38,7 @@ public class NormalInputHandler : MonoBehaviour
 
     public void Handle()
     {
+        SelectionManager.changed = false;
         //1. when left mouse button clicked (but not released)
         if (Input.GetMouseButtonDown(0))
         {
@@ -136,6 +137,12 @@ public class NormalInputHandler : MonoBehaviour
             
             
         }
+
+        if (SelectionManager.changed)
+        {
+            GameMaster.Instance.SelectionChanged();
+        }
+        
     }
 
     private void OnGUI()

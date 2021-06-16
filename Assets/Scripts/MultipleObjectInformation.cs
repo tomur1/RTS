@@ -6,7 +6,7 @@ public class MultipleObjectInformation : MonoBehaviour
 {
     [SerializeField] private GameObject buttonPrefab;
 
-    public void UpdateView()
+    public void UpdateView(SelectionManager selectionManager)
     {
         
     }
