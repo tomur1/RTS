@@ -21,9 +21,15 @@ public class SelectionIndicator : MonoBehaviour
     void Start()
     {
         mainCamera = Camera.main;
-        //Renderer parentRenderer = transform.parent.GetComponent<Renderer>();
-        //Debug.Log(parentRenderer.bounds);
     }
+
+    public void SetElement(IPlaceable element)
+    {
+        this.element = element;
+        var size = element.GridMultiplier * element.GridSize;
+        transform.localScale = new Vector3(size.x, transform.localScale.y, transform.localScale.z);
+    }
+
 
     // Update is called once per frame
     void Update()

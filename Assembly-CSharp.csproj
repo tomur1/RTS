@@ -58,6 +58,7 @@
      <Compile Include="Assets\Scripts\ButtonSpec.cs" />
      <Compile Include="Assets\Scripts\Grid\Cell.cs" />
      <Compile Include="Assets\Scripts\UnitsAndTechs\Units\Worker.cs" />
+     <Compile Include="Assets\SelectionIndicator.cs" />
      <Compile Include="Assets\Scripts\MapElements\UraniumSource.cs" />
      <Compile Include="Assets\Scripts\UnitsAndTechs\Technologies\Technology.cs" />
      <Compile Include="Assets\Scripts\MapCreator.cs" />
@@ -91,7 +92,6 @@
      <Compile Include="Assets\Scripts\MapElements\Resources\Oil.cs" />
      <Compile Include="Assets\Scripts\Pathfinding\MeshUtils.cs" />
      <Compile Include="Assets\Scripts\MapElements\Resources\Energy.cs" />
-     <Compile Include="Assets\SelectionIndicator.cs" />
      <None Include="Assets\TextMesh Pro\Shaders\TMPro.cginc" />
      <None Include="Assets\TextMesh Pro\Shaders\TMP_SDF-Mobile Overlay.shader" />
      <None Include="Assets\TextMesh Pro\Shaders\TMP_Bitmap.shader" />

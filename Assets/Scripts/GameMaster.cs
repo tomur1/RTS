@@ -17,6 +17,7 @@ public class GameMaster : MonoBehaviour
     public GuiManager GuiManager;
     public SelectionManager SelectionManager;
     public NormalInputHandler NormalInputHandler;
+    public GameObject SelectionIndicatorPrefab;
     public Camera mainCamera;
     private List<GameObject> DebugObjects;
     public Mode mode;
@@ -79,6 +80,23 @@ public class GameMaster : MonoBehaviour
                 GuiManager.SelectedObjectMenu.SwitchObject(townCenter);
             }
         }
+    }
+
+    public void AddSelectionIndicator(GameObject selection)
+    {
+        var createdIndicator = Instantiate(SelectionIndicatorPrefab, selection.transform);
+        if (selection.GetComponent<WorkerUnity>() != null)
+        {
+            createdIndicator.GetComponent<SelectionIndicator>().SetElement(selection.GetComponent<WorkerUnity>().Worker);
+        }else if (selection.GetComponent<TownCenterUnity>() != null)
+        {
+            createdIndicator.GetComponent<SelectionIndicator>().SetElement(selection.GetComponent<TownCenterUnity>().TownCenter);
+        }
+    }
+    
+    public void RemoveSelectionIndicator(GameObject selection)
+    {
+        Destroy(selection.transform.Find("Selection Indicator"));
     }
 
     public GameObject AddElementToGrid(IPlaceable elementToAdd)

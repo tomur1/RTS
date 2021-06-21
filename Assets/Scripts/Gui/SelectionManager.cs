@@ -20,6 +20,7 @@ public class SelectionManager
         if (!(selectedTable.ContainsKey(id)))
         {
             selectedTable.Add(id, go);
+            GameMaster.Instance.AddSelectionIndicator(go);
             Debug.Log("Added " + go.name + " to selected dict");
         }
         changed = true;
@@ -27,12 +28,17 @@ public class SelectionManager
 
     public void deselect(int id)
     {
+        GameMaster.Instance.RemoveSelectionIndicator(selectedTable[id]);
         selectedTable.Remove(id);
         changed = true;
     }
 
     public void deselectAll()
     {
+        foreach (var element in selectedTable.Values)
+        {
+            GameMaster.Instance.RemoveSelectionIndicator(element);
+        }
         selectedTable.Clear();
         changed = true;
     }
