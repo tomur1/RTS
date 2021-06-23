@@ -25,17 +25,43 @@ public class Worker : Unit, IMenuContainer
         Player = player;
         LeftTopCellCoord = coord;
         AssetName = "Units/Worker";
+        Groups = new HashSet<Group>();
         
         var mapElement = GameMaster.Instance.AddElementToGrid(this);
         var component = mapElement.GetComponent<WorkerUnity>();
         component.Worker = this;
+        MapObject = mapElement;
     }
 
     public override Vector2 GridSize { get; set; }
 
     public override int ConstructionMultiplier { get; set; }
+    public override void HandleRightClick(Cell clickedCell)
+    {
+        if (clickedCell.canPass())
+        {
+            MoveTo(clickedCell);
+            return;
+        }
+
+        foreach (var placeable in clickedCell.Elements)
+        {
+            if (placeable.GetType() == typeof(TownCenter))
+            {
+                var tc =  (TownCenter) placeable;
+                //Our Tc
+                if (tc.Player == Player && (tc.ConstructionCost.InConstruction || tc.Health.NotFull))
+                {
+                    //BuildOrRepair();
+                }
+            }
+        }
+    }
+
     public override Player Player { get; set; }
     private Dictionary<int, ButtonSpec> _buttonValuesSet;
+
+    public WorkerUnity WorkerUnity { get; set; }
 
     public Dictionary<int, ButtonSpec> GetButtonLayout()
     {
@@ -55,6 +81,6 @@ public class Worker : Unit, IMenuContainer
 
     public void BuildTownCenter()
     {
-        
+        Debug.Log("Building Town Center");
     }
 }

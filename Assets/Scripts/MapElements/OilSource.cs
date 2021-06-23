@@ -14,6 +14,8 @@ public class OilSource : IPlaceable
     public ConstructionCost ConstructionCost { get; set; }
     public Player Player { get; set; }
     public Health Health { get; set; }
+    
+    public GameObject MapObject { get; set; }
 
     public void InitValues(Player player, Vector2Int coord)
     {
@@ -31,6 +33,7 @@ public class OilSource : IPlaceable
         var mapElement = GameMaster.Instance.AddElementToGrid(this);
         var component = mapElement.GetComponent<OilUnity>();
         component.Oil = this;
+        MapObject = mapElement;
     }
     
 }

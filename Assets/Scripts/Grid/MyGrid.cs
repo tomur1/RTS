@@ -55,7 +55,7 @@ public class MyGrid
     {
         Vector3Int cellPos = GetCellPos(worldPos);
         var x = cellPos.x;
-        var y = cellPos.y;
+        var y = cellPos.z;
         // Don't go over
         if (x > width || x < 0 || y > height || y < 0)
         {
@@ -72,6 +72,23 @@ public class MyGrid
     public Vector3 GetWorldPos(int x, int z)
     {
         return new Vector3(x, 0, z) * cellSize + originPos;
+    }
+
+    public void UpdateElementPosition(IPlaceable element, Vector2Int newPos)
+    {
+        var takenCoords = CoordsTakenByElement(element);
+        foreach (var coord in takenCoords)
+        {
+            GetCellWithCoord(coord).Elements.Remove(element);
+        }
+        
+        var newTakenCoords = CoordsTakenByElement(element, newPos);
+        foreach (var coord in takenCoords)
+        {
+            GetCellWithCoord(coord).Elements.Add(element);
+        }
+
+        element.LeftTopCellCoord = newPos;
     }
 
     public void ShowLines()
@@ -116,6 +133,7 @@ public class MyGrid
         Vector2Int currentCoord = targetCoord;
         var steps = 1;
         int direction = 1;
+        var addSteps = 0;
         while (!found)
         {
             if (CanPlace(element, currentCoord))
@@ -147,6 +165,13 @@ public class MyGrid
             }
 
             direction++;
+            if (addSteps == 2)
+            {
+                addSteps = 0;
+                steps++;
+            }
+            
+            addSteps++;
             if (direction > 4)
             {
                 direction = 1;

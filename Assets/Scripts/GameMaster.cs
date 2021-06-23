@@ -1,8 +1,10 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using DefaultNamespace;
 using UnitsAndTechs;
+using UnitsAndTechs.Units;
 using UnityEngine;
 
 public class GameMaster : MonoBehaviour
@@ -20,6 +22,7 @@ public class GameMaster : MonoBehaviour
     public GameObject SelectionIndicatorPrefab;
     public Camera mainCamera;
     private List<GameObject> DebugObjects;
+    private Dictionary<Unit, Coroutine> runningRoutines;
     public Mode mode;
 
     private void Awake()
@@ -28,6 +31,7 @@ public class GameMaster : MonoBehaviour
         {
             Instance = this;
             SelectionManager = new SelectionManager();
+            mainCamera = Camera.main;
         }
         else
         {
@@ -40,6 +44,7 @@ public class GameMaster : MonoBehaviour
         grid = new MyGrid(100, 100, 1, Vector3.zero);
         mode = Mode.Normal;
         DebugObjects = new List<GameObject>();
+        runningRoutines = new Dictionary<Unit, Coroutine>();
         
         NormalInputHandler = FindObjectOfType<NormalInputHandler>();
         GuiManager = FindObjectOfType<GuiManager>();
@@ -49,7 +54,6 @@ public class GameMaster : MonoBehaviour
         players.Add(new Player(Color.blue));
         MapCreator.SpawnPlayers(grid, players);
         var tc = (IMenuContainer) players[0].Buildings[0];
-        //GuiManager.SelectedObjectMenu.SwitchObject(tc);
         grid.ShowLines();
     }
 
@@ -96,7 +100,7 @@ public class GameMaster : MonoBehaviour
     
     public void RemoveSelectionIndicator(GameObject selection)
     {
-        Destroy(selection.transform.Find("Selection Indicator"));
+        Destroy(selection.transform.Find("Selection Indicator(Clone)").gameObject);
     }
 
     public GameObject AddElementToGrid(IPlaceable elementToAdd)
@@ -110,16 +114,16 @@ public class GameMaster : MonoBehaviour
 
     public void CalcPathToDebug()
     {
-        CalcPathTo(DebugStartPos.transform.position, DebugEndPos.transform.position);
-    }
-
-    public void CalcPathTo(Vector3 startPos, Vector3 endPos)
-    {
-        var path = Pathfinding.Instance.FindPath(startPos, endPos);
+        var path = CalcPathTo(DebugStartPos.transform.position, DebugEndPos.transform.position);
         ShowPath(path);
     }
 
-    private void ShowPath(List<Vector3> path)
+    public List<Vector3> CalcPathTo(Vector3 startPos, Vector3 endPos)
+    {
+        return Pathfinding.Instance.FindPath(startPos, endPos);
+    }
+
+    public void ShowPath(List<Vector3> path)
     {
         foreach (var debugObject in DebugObjects)
         {
@@ -162,5 +166,83 @@ public class GameMaster : MonoBehaviour
         {
 
         }
+    }
+
+    public void RightClicked(Vector3 mousePosition)
+    {
+        List<Unit> units = new List<Unit>();
+        List<IUnitSpawner> unitSpawners = new List<IUnitSpawner>();
+        
+        foreach (var pair in SelectionManager.selectedTable)
+        {
+            var element = pair.Value;
+            if (element.GetComponent<WorkerUnity>() != null)
+            {
+                var worker = element.GetComponent<WorkerUnity>().Worker;
+                units.Add(worker);
+            }else if (element.GetComponent<TownCenterUnity>() != null)
+            {
+                var townCenter = element.GetComponent<TownCenterUnity>().TownCenter;
+                unitSpawners.Add(townCenter);
+            }
+        }
+        
+        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+        RaycastHit hit;
+        Cell clickedCell = null;
+        if (Physics.Raycast(ray, out hit))
+        {
+            Debug.Log("hit point: " + hit.point);
+            clickedCell = grid.GetCell(hit.point);
+            Debug.Log("clicked cell: " + clickedCell.GridPosition);
+        }
+
+        // If there are only unitSpawnres change their spawnpoint
+        if (units.Count == 0)
+        {
+            foreach (var spawner in unitSpawners)
+            {
+                spawner.SpawnPoint = clickedCell.GridPosition;
+            }
+        }
+
+        foreach (var unit in units)
+        {
+            unit.HandleRightClick(clickedCell);
+        }
+
+    }
+    
+    public void MoveUnit(Unit unit, List<Vector3> path)
+    {
+        if (runningRoutines.ContainsKey(unit))
+        {
+            StopCoroutine(runningRoutines[unit]);
+            runningRoutines[unit] = StartCoroutine(moveUnitEnum(unit, path));
+        }
+        else
+        {
+            runningRoutines.Add(unit, StartCoroutine(moveUnitEnum(unit, path)));    
+        }
+        
+        
+    }
+
+    IEnumerator moveUnitEnum(Unit unit, List<Vector3> path)
+    {
+        var rb = unit.MapObject.GetComponent<Rigidbody>();
+        foreach (var pathpoint in path)
+        {
+            while (Vector3.Distance(unit.MapObject.transform.position, pathpoint) > 0.1f)
+            {
+                var unitPosition = unit.MapObject.transform.position;
+                var movingTowards = (unitPosition - pathpoint).normalized * (unit.MovementSpeed * Time.deltaTime);
+                rb.MovePosition(unitPosition - movingTowards);
+                yield return null;
+            }
+            grid.UpdateElementPosition(unit, grid.GetCell(pathpoint).GridPosition);
+        }
+        
+        yield return null;
     }
 }

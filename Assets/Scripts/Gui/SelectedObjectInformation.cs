@@ -30,7 +30,7 @@ namespace Gui
             else
             {
                 objectNameText = worker.GetType().Name;
-                groupsText = worker.Groups.ToString();
+                groupsText = worker.GroupsNumberString();
                 attackTypeText = "";
                 attackPowerText = "";
                 attackSpeedText = "";

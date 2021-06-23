@@ -16,5 +16,6 @@ public abstract class Building : IPlaceable
     public ConstructionCost ConstructionCost { get; set; }
     public Player Player { get; set; }
     public Health Health { get; set; }
+    public GameObject MapObject { get; set; }
     public abstract void InitValues(Player player, Vector2Int coord);
 }

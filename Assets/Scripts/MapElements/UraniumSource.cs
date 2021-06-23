@@ -15,6 +15,7 @@ public class UraniumSource : IPlaceable
     public ConstructionCost ConstructionCost { get; set; }
     public Player Player { get; set; }
     public Health Health { get; set; }
+    public GameObject MapObject { get; set; }
 
     public void InitValues(Player player, Vector2Int coord)
     {
@@ -32,5 +33,6 @@ public class UraniumSource : IPlaceable
         var mapElement = GameMaster.Instance.AddElementToGrid(this);
         var component = mapElement.GetComponent<UraniumUnity>();
         component.Uranium = this;
+        MapObject = mapElement;
     }
 }

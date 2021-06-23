@@ -8,6 +8,8 @@
             CurrentAmount = startingAmount;
         }
 
+        public bool NotFull => StartingAmount > CurrentAmount;
+
         public int StartingAmount { get; }
         public int CurrentAmount { get; set; }
         

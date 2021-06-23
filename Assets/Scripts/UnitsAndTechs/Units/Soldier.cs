@@ -13,10 +13,16 @@ public class Soldier : Unit
     }
 
     public override int ConstructionMultiplier { get; set; }
+    public override void HandleRightClick(Cell clickedCell)
+    {
+        throw new System.NotImplementedException();
+    }
+
     public override Player Player { get; set; }
     public static AttackAbility attackAbility;
 
     public Soldier()
     {
+        
     }
 }

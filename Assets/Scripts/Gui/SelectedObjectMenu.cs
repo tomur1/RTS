@@ -38,6 +38,7 @@ public class SelectedObjectMenu : MonoBehaviour
             var button = buttons[entity.Key];
             var text = button.GetComponentInChildren<TextMeshProUGUI>();
             text.SetText(entity.Value.InfoString);
+            button.onClick.RemoveAllListeners();
             button.onClick.AddListener(delegate{PerformButtonAction(entity.Value.ActionName);});
             button.gameObject.SetActive(true);
         }

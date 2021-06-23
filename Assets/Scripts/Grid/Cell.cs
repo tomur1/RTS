@@ -6,6 +6,9 @@ public class Cell
 {
     public List<IPlaceable> Elements { get; set; }
     public Vector2Int GridPosition { get; set; }
+    
+    public Building Building { get; set; }
+
     public Cell(Vector2Int gridPosition, List<IPlaceable> elements)
     {
         GridPosition = gridPosition;

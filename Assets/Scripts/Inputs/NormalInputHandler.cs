@@ -57,11 +57,17 @@ public class NormalInputHandler : MonoBehaviour
         //3. when mouse button comes up
         if (Input.GetMouseButtonUp(0))
         {
+            //Click in menu. Ignore
+            if (p1.y / Screen.height < 0.18981481)
+            {
+                return;
+            }
+            
             if (dragSelect == false) //single select
             {
                 Ray ray = Camera.main.ScreenPointToRay(p1);
 
-                if (Physics.Raycast(ray, out hit, 50000.0f))
+                if (Physics.Raycast(ray, out hit, 50000.0f, LayerMask.GetMask("IPlaceable")))
                 {
                     if (Input.GetKey(KeyCode.LeftShift)) //inclusive select
                     {
@@ -111,9 +117,12 @@ public class NormalInputHandler : MonoBehaviour
                 selectionMesh = generateSelectionMesh(verts, vecs);
 
                 selectionBox = gameObject.AddComponent<MeshCollider>();
+                var rigid = selectionBox.gameObject.AddComponent<Rigidbody>();
                 selectionBox.sharedMesh = selectionMesh;
                 selectionBox.convex = true;
                 selectionBox.isTrigger = true;
+                
+                Debug.DrawLine(selectionBox.sharedMesh.bounds.min, selectionBox.sharedMesh.bounds.max, Color.green, 10.0f);
 
                 if (!Input.GetKey(KeyCode.LeftShift))
                 {
@@ -121,6 +130,7 @@ public class NormalInputHandler : MonoBehaviour
                 }
 
                 Destroy(selectionBox, 0.02f);
+                Destroy(rigid, 0.02f);
 
             } //end marquee select
 
@@ -130,12 +140,7 @@ public class NormalInputHandler : MonoBehaviour
         //4. Right click is released
         if (Input.GetMouseButtonUp(1))
         {
-            foreach (var pair in SelectionManager.selectedTable)
-            {
-                var element = pair.Value.GetComponent<IPlaceable>();
-            }
-            
-            
+            GameMaster.Instance.RightClicked(Input.mousePosition);
         }
 
         if (SelectionManager.changed)
@@ -229,6 +234,7 @@ public class NormalInputHandler : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
+        Debug.Log("Trigger called");
         SelectionManager.addSelected(other.gameObject);
     }
 

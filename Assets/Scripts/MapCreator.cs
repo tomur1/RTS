@@ -25,18 +25,16 @@ public class MapCreator : MonoBehaviour
                 if (number <= resourceRarity["uranium"])
                 {
                     var uranium = new UraniumSource(cellCoord);
-                    if (grid.CanPlace(uranium))
-                    {
-                        grid.AddElement(uranium);                        
-                    }
+                    var availablePos = grid.FindClosestEmptyPos(uranium, cellCoord);
+                    uranium.LeftTopCellCoord = availablePos.GridPosition;
+                    grid.AddElement(uranium);                        
                     
                 }else if (number <= resourceRarity["oil"])
                 {
                     var oil = new OilSource(cellCoord);
-                    if (grid.CanPlace(oil))
-                    {
-                        grid.AddElement(oil);                        
-                    }
+                    var availablePos = grid.FindClosestEmptyPos(oil, cellCoord);
+                    oil.LeftTopCellCoord = availablePos.GridPosition;
+                    grid.AddElement(oil);
                 }
                 else
                 {
@@ -54,7 +52,11 @@ public class MapCreator : MonoBehaviour
 
         for (int i = 0; i < players.Count; i++)
         {
-            players[i].Buildings.Add(new TownCenter(points[i], players[i], true));
+            var tc = new TownCenter(true);
+            var emptyPos = grid.FindClosestEmptyPos(tc, points[i]);
+            tc.LeftTopCellCoord = emptyPos.GridPosition;
+            tc.InitValues(players[i], points[i]);
+            players[i].Buildings.Add(tc);
         }
     }
 
