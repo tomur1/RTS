@@ -1,5 +1,17 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!114 &525511388
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7535145722205369274}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 006c54629f288cd4baa26179755c85eb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &1703073441369798007
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -9,7 +21,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 9165035630905083597, guid: c347248590f561047aeb83e74dbd3872, type: 3}
       propertyPath: m_Name
-      value: Town Center
+      value: Town Center Variant
       objectReference: {fileID: 0}
     - target: {fileID: 9165035630905083598, guid: c347248590f561047aeb83e74dbd3872, type: 3}
       propertyPath: m_RootOrder
@@ -17,15 +29,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 9165035630905083598, guid: c347248590f561047aeb83e74dbd3872, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 15.5
+      value: 85.149345
       objectReference: {fileID: 0}
     - target: {fileID: 9165035630905083598, guid: c347248590f561047aeb83e74dbd3872, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0.33
+      value: -0.0000038146973
       objectReference: {fileID: 0}
     - target: {fileID: 9165035630905083598, guid: c347248590f561047aeb83e74dbd3872, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 7.07
+      value: 80.1443
       objectReference: {fileID: 0}
     - target: {fileID: 9165035630905083598, guid: c347248590f561047aeb83e74dbd3872, type: 3}
       propertyPath: m_LocalRotation.w
@@ -102,3 +114,8 @@ PrefabInstance:
     - {fileID: 9165035631560357228, guid: c347248590f561047aeb83e74dbd3872, type: 3}
     - {fileID: 9165035631342632533, guid: c347248590f561047aeb83e74dbd3872, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: c347248590f561047aeb83e74dbd3872, type: 3}
+--- !u!1 &7535145722205369274 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 9165035630905083597, guid: c347248590f561047aeb83e74dbd3872, type: 3}
+  m_PrefabInstance: {fileID: 1703073441369798007}
+  m_PrefabAsset: {fileID: 0}

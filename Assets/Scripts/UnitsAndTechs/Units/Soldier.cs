@@ -19,7 +19,12 @@ public class Soldier : Unit
     }
 
     public override Player Player { get; set; }
-    public static AttackAbility attackAbility;
+    public override int getRange()
+    {
+        return AttackAbility.range;
+    }
+
+    public static AttackAbility AttackAbility { get; set; }
 
     public Soldier()
     {

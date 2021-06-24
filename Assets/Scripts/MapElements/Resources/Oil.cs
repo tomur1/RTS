@@ -4,13 +4,17 @@ using UnityEngine;
 
 public class Oil : Resource
 {
-
-    Oil()
+    public Oil()
     {
         MiningDifficulty = 20;
         Capacity = 500;
         CollectedAmount = 0;
     }
 
-    
+    public Oil(int startingAmount)
+    {
+        MiningDifficulty = 20;
+        Capacity = 500;
+        CollectedAmount = startingAmount;
+    }
 }

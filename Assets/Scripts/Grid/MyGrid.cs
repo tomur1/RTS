@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnitsAndTechs;
+using UnitsAndTechs.Units;
 using UnityEngine;
 
 public class MyGrid
@@ -57,7 +58,7 @@ public class MyGrid
         var x = cellPos.x;
         var y = cellPos.z;
         // Don't go over
-        if (x > width || x < 0 || y > height || y < 0)
+        if (x >= width || x < 0 || y >= height || y < 0)
         {
             throw new IndexOutOfRangeException("Wanted Cell out of bounds");
         }
@@ -97,18 +98,18 @@ public class MyGrid
         {
             for (int j = 0; j < height; j++)
             {
-                Debug.DrawLine(GetWorldPos(i,j), GetWorldPos(i,j+1), Color.blue, 100f);
-                Debug.DrawLine(GetWorldPos(i,j), GetWorldPos(i+1,j), Color.blue, 100f);
+                Debug.DrawLine(GetWorldPos(i,j), GetWorldPos(i,j+1), Color.blue, Time.deltaTime);
+                Debug.DrawLine(GetWorldPos(i,j), GetWorldPos(i+1,j), Color.blue, Time.deltaTime);
                 var cell = GetCellWithCoord( new Vector2Int(i,j));
                 if (!cell.canPass())
                 {
-                    Debug.DrawLine(GetWorldPos(i,j), GetWorldPos(i+1,j+1), Color.red, 100f);
-                    Debug.DrawLine(GetWorldPos(i,j+1), GetWorldPos(i+1,j), Color.red, 100f);
+                    Debug.DrawLine(GetWorldPos(i,j), GetWorldPos(i+1,j+1), Color.red, Time.deltaTime);
+                    Debug.DrawLine(GetWorldPos(i,j+1), GetWorldPos(i+1,j), Color.red, Time.deltaTime);
                 }
             }
         }
-        Debug.DrawLine(GetWorldPos(0,height), GetWorldPos(width,height), Color.blue, 100f);
-        Debug.DrawLine(GetWorldPos(width,0), GetWorldPos(width,height), Color.blue, 100f);
+        Debug.DrawLine(GetWorldPos(0,height), GetWorldPos(width,height), Color.blue, Time.deltaTime);
+        Debug.DrawLine(GetWorldPos(width,0), GetWorldPos(width,height), Color.blue, Time.deltaTime);
     }
 
     public void AddElement(IPlaceable elementToAdd)
@@ -124,6 +125,17 @@ public class MyGrid
         {
             var cell = GetCellWithCoord(takenCoord);
             cell.Elements.Add(elementToAdd);
+        }
+    }
+
+    public void RemoveElement(IPlaceable elementToRemove)
+    {
+        var takenCoords = CoordsTakenByElement(elementToRemove);
+        
+        foreach (var takenCoord in takenCoords)
+        {
+            var cell = GetCellWithCoord(takenCoord);
+            cell.Elements.Remove(elementToRemove);
         }
     }
 
@@ -267,5 +279,132 @@ public class MyGrid
         }
 
         return true;
+    }
+
+    // Return closest cell to unit from which unit can do action. IE. Attack or build
+    public Cell GetClosestCellInRangeTo(Unit unit, IPlaceable placeable)
+    {
+        var range = unit.getRange();
+
+        if (range == 0)
+        {
+            Debug.LogWarning("Range should not be 0");
+        }
+
+        if (InRange(unit.LeftTopCellCoord, range, placeable))
+        {
+            return GetCellWithCoord(unit.LeftTopCellCoord);
+        }
+
+        var closestCell = GetClosestCellTo(unit.LeftTopCellCoord, placeable);
+
+        Vector2Int lastCoord = new Vector2Int();
+        bool? isFirstInRange = null;
+        foreach (var coordOnLine in GetPointsOnLine(unit.LeftTopCellCoord.x, unit.LeftTopCellCoord.y, closestCell.GridPosition.x, closestCell.GridPosition.y))
+        {
+            if (isFirstInRange == null)
+            {
+                if (InRange(coordOnLine, range, placeable))
+                {
+                    isFirstInRange = true;
+                }
+                else
+                {
+                    isFirstInRange = false;
+                }
+            }
+
+            if (isFirstInRange == true)
+            {
+                if (!InRange(coordOnLine, range, placeable))
+                {
+                    return GetCellWithCoord(lastCoord);
+                }
+            }
+            else
+            {
+                if (InRange(coordOnLine, range, placeable))
+                {
+                    return GetCellWithCoord(coordOnLine);
+                }
+            }
+            lastCoord = coordOnLine;
+        }
+
+        return null;
+    }
+    
+    public Cell GetClosestCellTo(Vector2 unitPos, IPlaceable placeable){
+        Vector2Int closestCoord = placeable.LeftTopCellCoord;
+        float minDistance = Single.MaxValue;
+        foreach (var coord in CoordsTakenByElement(placeable))
+        {
+            var distance = Vector2.Distance(coord, unitPos);
+            if (minDistance > distance )
+            {
+                minDistance = distance;
+                closestCoord = coord;
+            }
+        }
+
+        return GetCellWithCoord(closestCoord);
+    }
+
+    public bool InRange(Vector2Int unitPos, int range, IPlaceable placeable)
+    {
+        var distance = unitPos - GetClosestCellTo(unitPos, placeable).GridPosition;
+        if (Mathf.Abs(distance.x) > range || Mathf.Abs(distance.y) > range)
+        {
+            return false;
+        }
+
+        return true;
+    }
+
+    public Vector3 UnityPlacePosition(IPlaceable elementToAdd, Vector2Int wantedCoord)
+    {
+        return GetWorldPos(wantedCoord.x, wantedCoord.y) +
+               new Vector3(elementToAdd.GridSize.x * elementToAdd.GridMultiplier, 0,
+                   elementToAdd.GridSize.y * elementToAdd.GridMultiplier) / 2;
+    }
+
+    public static IEnumerable<Vector2Int> GetPointsOnLine(int x0, int y0, int x1, int y1)
+    {
+        bool steep = Math.Abs(y1 - y0) > Math.Abs(x1 - x0);
+        if (steep)
+        {
+            int t;
+            t = x0; // swap x0 and y0
+            x0 = y0;
+            y0 = t;
+            t = x1; // swap x1 and y1
+            x1 = y1;
+            y1 = t;
+        }
+        if (x0 > x1)
+        {
+            int t;
+            t = x0; // swap x0 and x1
+            x0 = x1;
+            x1 = t;
+            t = y0; // swap y0 and y1
+            y0 = y1;
+            y1 = t;
+        }
+        int dx = x1 - x0;
+        int dy = Math.Abs(y1 - y0);
+        int error = dx / 2;
+        int ystep = (y0 < y1) ? 1 : -1;
+        int y = y0;
+        for (int x = x0; x <= x1; x++)
+        {
+            yield return new Vector2Int((steep ? y : x), (steep ? x : y));
+            error = error - dy;
+            if (error < 0)
+            {
+                y += ystep;
+                error += dx;
+            }
+        }
     }
 }

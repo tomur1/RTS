@@ -24,17 +24,15 @@ public class MapCreator : MonoBehaviour
                 var cellCoord = new Vector2Int(i, j);
                 if (number <= resourceRarity["uranium"])
                 {
-                    var uranium = new UraniumSource(cellCoord);
+                    var uranium = new UraniumSource();
                     var availablePos = grid.FindClosestEmptyPos(uranium, cellCoord);
-                    uranium.LeftTopCellCoord = availablePos.GridPosition;
-                    grid.AddElement(uranium);                        
-                    
+                    uranium.InitValues(null, availablePos.GridPosition);
+
                 }else if (number <= resourceRarity["oil"])
                 {
-                    var oil = new OilSource(cellCoord);
+                    var oil = new OilSource();
                     var availablePos = grid.FindClosestEmptyPos(oil, cellCoord);
-                    oil.LeftTopCellCoord = availablePos.GridPosition;
-                    grid.AddElement(oil);
+                    oil.InitValues(null, availablePos.GridPosition);
                 }
                 else
                 {

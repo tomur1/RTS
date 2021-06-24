@@ -8,7 +8,7 @@ namespace UnitsAndTechs
     {
         public abstract Vector2 GridSize { get; set; }
         public GridMode GridMode { get; }
-        public int GridMultiplier { get; }
+        public abstract int GridMultiplier { get; }
         public string AssetName { get; set; }
         public Vector2Int LeftTopCellCoord { get; set; }
         public ConstructionCost ConstructionCost { get; set; }

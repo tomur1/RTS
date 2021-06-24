@@ -44,6 +44,12 @@ public class NormalInputHandler : MonoBehaviour
         {
             p1 = Input.mousePosition;
         }
+        
+        //Click in menu. Ignore
+        if (p1.y / Screen.height < 0.18981481)
+        {
+            return;
+        }
 
         //2. while left mouse button held
         if (Input.GetMouseButton(0))
@@ -57,12 +63,6 @@ public class NormalInputHandler : MonoBehaviour
         //3. when mouse button comes up
         if (Input.GetMouseButtonUp(0))
         {
-            //Click in menu. Ignore
-            if (p1.y / Screen.height < 0.18981481)
-            {
-                return;
-            }
-            
             if (dragSelect == false) //single select
             {
                 Ray ray = Camera.main.ScreenPointToRay(p1);

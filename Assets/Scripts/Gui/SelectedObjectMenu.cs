@@ -39,16 +39,8 @@ public class SelectedObjectMenu : MonoBehaviour
             var text = button.GetComponentInChildren<TextMeshProUGUI>();
             text.SetText(entity.Value.InfoString);
             button.onClick.RemoveAllListeners();
-            button.onClick.AddListener(delegate{PerformButtonAction(entity.Value.ActionName);});
+            button.onClick.AddListener(delegate{GameMaster.Instance.PerformAction(entity.Value.ActionName, selectedObject);});
             button.gameObject.SetActive(true);
         }
     }
-
-    public UnityAction PerformButtonAction(String actionName)
-    {
-        Type thisType = selectedObject.GetType();
-        MethodInfo theMethod = thisType.GetMethod(actionName);
-        theMethod.Invoke(selectedObject, null);
-        return null;
-    } 
 }

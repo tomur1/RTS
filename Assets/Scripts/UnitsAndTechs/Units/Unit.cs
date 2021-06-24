@@ -28,10 +28,12 @@ namespace UnitsAndTechs.Units
         
         public abstract Player Player { get; set; }
 
+        public UnitState UnitState;
+
         public void MoveTo(Cell cell)
         {
             var gameMaster = GameMaster.Instance;
-            var path = gameMaster.CalcPathTo(new Vector3(LeftTopCellCoord.x, 0, LeftTopCellCoord.y), new Vector3(cell.GridPosition.x, 0 , cell.GridPosition.y));
+            var path = Pathfinding.Instance.FindPath(new Vector3(LeftTopCellCoord.x, 0, LeftTopCellCoord.y), new Vector3(cell.GridPosition.x, 0 , cell.GridPosition.y));
             if (path == null)
             {
                 return;
@@ -39,11 +41,11 @@ namespace UnitsAndTechs.Units
 
             var rb = MapObject.GetComponent<Rigidbody>();
             
-            gameMaster.ShowPath(path);
-            gameMaster.grid.UpdateElementPosition(this, cell.GridPosition);
             gameMaster.MoveUnit(this, path);
-
         }
+
+        public abstract int getRange();
+        
 
         public List<int> GroupsNumbers()
         {

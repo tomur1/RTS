@@ -4,10 +4,17 @@ using UnityEngine;
 
 public class Science : Resource
 {
-    Science()
+    public Science()
     {
         MiningDifficulty = 30;
         Capacity = 999999999;
         CollectedAmount = 0;
+    }
+    
+    public Science(int startingAmount)
+    {
+        MiningDifficulty = 30;
+        Capacity = 999999999;
+        CollectedAmount = startingAmount;
     }
 }

@@ -3,20 +3,20 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Reflection;
 using DefaultNamespace;
+using UnitsAndTechs.Units;
 using UnityEngine;
 
 namespace UnitsAndTechs
 {
     public class TownCenter : Building, IMenuContainer, IUnitSpawner
     {
-        public TownCenter(bool startGame)
+        public TownCenter(bool startGame, Worker worker = null)
         {
             GridSize = new Vector2(3, 3);
-            
+            GridMultiplier = 3;
             // On game start insert the town center already constructed
             if (startGame)
             {
-                AssetName = "Buildings/Town Center";
                 ConstructionCost = new ConstructionCost(500, 200,
                     0, 0, 0, 500, 500);
             }
@@ -24,22 +24,23 @@ namespace UnitsAndTechs
             {
                 AssetName = "Buildings Transparent/Town Center";
                 ConstructionCost = new ConstructionCost(500, 200,
-                    0, 0, 0, 500);
-                
+                    0, 0, 0, 50);
             }
+            Health = new Health(0, ConstructionCost.ConstructionDifficulty);
 
         }
 
         public override int ConstructionMultiplier { get; set; }
         public override Vector2 GridSize { get; set; }
+        public override int GridMultiplier { get; set; }
 
         public override void InitValues(Player player, Vector2Int coord)
         {
             LeftTopCellCoord = coord;
             Player = player;
-            Health = new Health(1000);
+            Health = new Health(500, ConstructionCost.ConstructionDifficulty);
             SpawnPoint = LeftTopCellCoord - Vector2Int.one;
-            
+            AssetName = "Buildings/Town Center";
             if (!GameMaster.Instance.grid.InBounds(SpawnPoint))
             {
                 SpawnPoint = LeftTopCellCoord + Vector2Int.one;
@@ -48,11 +49,38 @@ namespace UnitsAndTechs
             CreateUnityObject();
         }
 
+        public override void InitValuesFoundation(Player player, Vector2Int coord)
+        {
+            LeftTopCellCoord = coord;
+            Player = player;
+            AssetName = "Buildings Transparent/Town Center";
+            Health = new Health(0, ConstructionCost.ConstructionDifficulty);
+            GameMaster.Instance.grid.AddElement(this);
+        }
+
+        protected override void ConstructionFinished()
+        {
+            GameMaster.Instance.DestroyMapObject(MapObject);
+            GameMaster.Instance.grid.RemoveElement(this);
+            InitValues(Player, LeftTopCellCoord);
+        }
+
         public void CreateUnityObject()
         {
             var mapElement = GameMaster.Instance.AddElementToGrid(this);
             var component = mapElement.GetComponent<TownCenterUnity>();
             component.TownCenter = this;
+            MapObject = mapElement;
+        }
+        
+        public void CreateFoundationUnityObject(Worker worker)
+        {
+            var mapElement = GameMaster.Instance.CreateObject(this);
+            var component = mapElement.GetComponent<FoundationUnity>();
+            var townCenterUnitycomponent = mapElement.GetComponent<TownCenterUnity>();
+            component.Element = this;
+            component.Worker = worker;
+            townCenterUnitycomponent.TownCenter = this;
             MapObject = mapElement;
         }
         
@@ -71,7 +99,6 @@ namespace UnitsAndTechs
 
             ButtonSpec worker = new ButtonSpec("Worker", 0, "CreateWorker");
             buttons.Add(worker.ButtonIdx, worker);
-
             _buttonValuesSet = buttons;
             return buttons;
         }
@@ -79,10 +106,16 @@ namespace UnitsAndTechs
         public void CreateWorker()
         {
             //Check if enough resources and the start creation process
-            GameMaster.Instance.StartCoroutine(StartCreating(new Worker()));
+            var worker = new Worker(Player);
+            if (Player.HasEnoughResources(worker.ConstructionCost))
+            {
+                Player.SubstractResources(worker.ConstructionCost);
+                GameMaster.Instance.StartCoroutine(StartCreatingUnit(worker));
+            }
+            
         }
 
-        private IEnumerator StartCreating(IPlaceable unit)
+        private IEnumerator StartCreatingUnit(IPlaceable unit)
         {
             var constructionCost = unit.ConstructionCost;
             while (constructionCost.InConstruction)

@@ -4,10 +4,17 @@ using UnityEngine;
 
 public class Uranium : Resource
 {
-    Uranium()
+    public Uranium()
     {
         MiningDifficulty = 50;
         Capacity = 100;
         CollectedAmount = 0;
+    }
+    
+    public Uranium(int startingAmount)
+    {
+        MiningDifficulty = 50;
+        Capacity = 100;
+        CollectedAmount = startingAmount;
     }
 }

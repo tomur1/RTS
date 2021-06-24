@@ -37,7 +37,7 @@ public class SelectionIndicator : MonoBehaviour
         transform.LookAt(mainCamera.transform);
         if (element != null)
         {
-            HealthBar.value = element.Health.CurrentAmount / (float) element.Health.CurrentAmount;    
+            HealthBar.value = element.Health.CurrentAmount / (float) element.Health.MaxAmount;    
         }
         
     }

@@ -19,20 +19,18 @@ public class UraniumSource : IPlaceable
 
     public void InitValues(Player player, Vector2Int coord)
     {
-        
+        LeftTopCellCoord = coord;
+        var mapElement = GameMaster.Instance.AddElementToGrid(this);
+        var component = mapElement.GetComponent<UraniumUnity>();
+        component.Uranium = this;
+        MapObject = mapElement;
     }
 
-    public UraniumSource(Vector2Int leftTopCellCoord)
+    public UraniumSource()
     {
         GridMultiplier = 2;
         GridSize = new Vector2(1, 1);
         GridMode = GridMode.blocking;
         AssetName = "Map Resources/Uranium Resource";
-        LeftTopCellCoord = leftTopCellCoord;
-        
-        var mapElement = GameMaster.Instance.AddElementToGrid(this);
-        var component = mapElement.GetComponent<UraniumUnity>();
-        component.Uranium = this;
-        MapObject = mapElement;
     }
 }

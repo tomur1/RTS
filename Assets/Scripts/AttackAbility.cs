@@ -4,12 +4,6 @@ using UnityEngine;
 
 public class AttackAbility : MonoBehaviour
 {
-    public enum attackTypes
-    {
-        Meele,
-        Ranged
-    }
-
     public AttackAbility(int range, int attackPower, float attackDelay, float attackType)
     {
         this.range = range;

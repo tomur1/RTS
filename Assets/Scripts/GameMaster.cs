@@ -2,10 +2,13 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using DefaultNamespace;
 using UnitsAndTechs;
 using UnitsAndTechs.Units;
 using UnityEngine;
+using UnityEngine.Events;
+using Object = System.Object;
 
 public class GameMaster : MonoBehaviour
 {
@@ -23,6 +26,8 @@ public class GameMaster : MonoBehaviour
     public Camera mainCamera;
     private List<GameObject> DebugObjects;
     private Dictionary<Unit, Coroutine> runningRoutines;
+    private List<Player> playersInGame;
+    public Player player;
     public Mode mode;
 
     private void Awake()
@@ -50,11 +55,11 @@ public class GameMaster : MonoBehaviour
         GuiManager = FindObjectOfType<GuiManager>();
         new Pathfinding();
         MapCreator.FillGrid(grid);
-        List<Player> players = new List<Player>();
-        players.Add(new Player(Color.blue));
-        MapCreator.SpawnPlayers(grid, players);
-        var tc = (IMenuContainer) players[0].Buildings[0];
-        grid.ShowLines();
+        playersInGame = new List<Player>();
+        player = new Player(Color.blue);
+        playersInGame.Add(player);
+        MapCreator.SpawnPlayers(grid, playersInGame);
+        
     }
 
     public void SelectionChanged()
@@ -81,7 +86,11 @@ public class GameMaster : MonoBehaviour
             {
                 var townCenter = element.GetComponent<TownCenterUnity>().TownCenter;
                 GuiManager.SelectedObjectInformation.UpdateView(townCenter);
-                GuiManager.SelectedObjectMenu.SwitchObject(townCenter);
+                if (!townCenter.ConstructionCost.InConstruction)
+                {
+                    GuiManager.SelectedObjectMenu.SwitchObject(townCenter);
+                }
+                
             }
         }
     }
@@ -100,16 +109,22 @@ public class GameMaster : MonoBehaviour
     
     public void RemoveSelectionIndicator(GameObject selection)
     {
-        Destroy(selection.transform.Find("Selection Indicator(Clone)").gameObject);
+        if (selection != null)
+        {
+            Destroy(selection.transform.Find("Selection Indicator(Clone)").gameObject);    
+        }
     }
 
     public GameObject AddElementToGrid(IPlaceable elementToAdd)
-    
+    {
+        grid.AddElement(elementToAdd);
+        return CreateObject(elementToAdd);
+    }
+
+    public GameObject CreateObject(IPlaceable elementToAdd)
     {
         var elementUnityObject = Resources.Load<GameObject>(elementToAdd.AssetName);
-        grid.AddElement(elementToAdd);
-        return Instantiate(elementUnityObject, grid.GetWorldPos(elementToAdd.LeftTopCellCoord.x, elementToAdd.LeftTopCellCoord.y) +
-                                               new Vector3(elementToAdd.GridSize.x * elementToAdd.GridMultiplier, 0, elementToAdd.GridSize.y * elementToAdd.GridMultiplier)/2, Quaternion.identity);
+        return Instantiate(elementUnityObject, grid.UnityPlacePosition(elementToAdd, elementToAdd.LeftTopCellCoord), Quaternion.identity);
     }
 
     public void CalcPathToDebug()
@@ -138,6 +153,7 @@ public class GameMaster : MonoBehaviour
 
     private void Update()
     {
+        grid.ShowLines();
         switch (mode)
         {
             case Mode.Normal:
@@ -154,10 +170,7 @@ public class GameMaster : MonoBehaviour
 
     private void PlacingInputHandle()
     {
-        if (Input.GetMouseButtonDown(0))
-        {
-            //Place the structure    
-        }
+        
     }
 
     private void PauseInputHandle()
@@ -192,9 +205,7 @@ public class GameMaster : MonoBehaviour
         Cell clickedCell = null;
         if (Physics.Raycast(ray, out hit))
         {
-            Debug.Log("hit point: " + hit.point);
             clickedCell = grid.GetCell(hit.point);
-            Debug.Log("clicked cell: " + clickedCell.GridPosition);
         }
 
         // If there are only unitSpawnres change their spawnpoint
@@ -217,16 +228,35 @@ public class GameMaster : MonoBehaviour
     {
         if (runningRoutines.ContainsKey(unit))
         {
-            StopCoroutine(runningRoutines[unit]);
+            if (runningRoutines[unit] != null)
+            {
+                StopCoroutine(runningRoutines[unit]);
+            }
+            
             runningRoutines[unit] = StartCoroutine(moveUnitEnum(unit, path));
         }
         else
         {
             runningRoutines.Add(unit, StartCoroutine(moveUnitEnum(unit, path)));    
         }
-        
-        
     }
+    
+    public void MoveUnitWithAction(Unit unit, String actionName, IPlaceable target)
+    {
+        if (runningRoutines.ContainsKey(unit))
+        {
+            if (runningRoutines[unit] != null)
+            {
+                StopCoroutine(runningRoutines[unit]);
+            }
+            runningRoutines[unit] = StartCoroutine(moveUnitWithActionEnum(unit, actionName, target));
+        }
+        else
+        {
+            runningRoutines.Add(unit, StartCoroutine(moveUnitWithActionEnum(unit, actionName, target)));    
+        }
+    }
+
 
     IEnumerator moveUnitEnum(Unit unit, List<Vector3> path)
     {
@@ -245,4 +275,67 @@ public class GameMaster : MonoBehaviour
         
         yield return null;
     }
+    
+    
+    
+    IEnumerator moveUnitWithActionEnum(Unit unit, String actionName, IPlaceable target)
+    {
+        while (true)
+        {
+            if (grid.InRange(unit.LeftTopCellCoord, unit.getRange(), target))
+            {
+                PerformAction(actionName, unit, new object[]{new object[]{target}});
+                break;
+            }
+            var closestCell = grid.GetClosestCellInRangeTo(unit, target);
+            var path = Pathfinding.Instance.FindPath(unit.MapObject.transform.position, grid.GetWorldPos(closestCell.GridPosition.x, closestCell.GridPosition.y)).GetRange(0,2);
+            yield return moveUnitEnum(unit, path);
+        }
+    }
+    
+    public void RepairBuilding(Unit unit, Building target)
+    {
+        if (runningRoutines.ContainsKey(unit))
+        {
+            if (runningRoutines[unit] != null)
+            {
+                StopCoroutine(runningRoutines[unit]);
+            }
+            runningRoutines[unit] = StartCoroutine(RepairBuildingEnum( (Worker) unit, target));
+        }
+        else
+        {
+            runningRoutines.Add(unit, StartCoroutine(RepairBuildingEnum((Worker) unit, target)));    
+        }
+    }
+
+    public void DestroyMapObject(GameObject mapObject)
+    {
+        Destroy(mapObject);
+    }
+    
+    IEnumerator RepairBuildingEnum(Worker worker, Building target)
+    {
+        while (grid.InRange(worker.LeftTopCellCoord, worker.getRange(), target))
+        {
+            if (target.ConstructionCost.InConstruction)
+            {
+                target.AddConstructionPoints(worker.BuildingSpeed);
+                Debug.Log(target.ConstructionCost.ConstructionPoints);
+            }else if (target.Health.NotFull)
+            {
+                target.Health.AddHealth(worker.BuildingSpeed);
+            }
+            
+            yield return new WaitForSeconds(1f);
+        }
+    }
+
+    public UnityAction PerformAction(String actionName, Object actionObject, Object[] parameters = null)
+    {
+        Type thisType = actionObject.GetType();
+        MethodInfo theMethod = thisType.GetMethod(actionName);
+        theMethod.Invoke(actionObject, parameters);
+        return null;
+    } 
 }

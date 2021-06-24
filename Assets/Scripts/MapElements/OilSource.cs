@@ -19,21 +19,20 @@ public class OilSource : IPlaceable
 
     public void InitValues(Player player, Vector2Int coord)
     {
-        
-    }
-
-    public OilSource(Vector2Int leftTopCellCoord)
-    {
-        GridMultiplier = 2;
-        GridSize = new Vector2(1, 1);
-        GridMode = GridMode.blocking;
-        AssetName = "Map Resources/Oil Resource";
-        LeftTopCellCoord = leftTopCellCoord;
+        LeftTopCellCoord = coord;
         
         var mapElement = GameMaster.Instance.AddElementToGrid(this);
         var component = mapElement.GetComponent<OilUnity>();
         component.Oil = this;
         MapObject = mapElement;
+    }
+
+    public OilSource()
+    {
+        GridMultiplier = 2;
+        GridSize = new Vector2(1, 1);
+        GridMode = GridMode.blocking;
+        AssetName = "Map Resources/Oil Resource";
     }
     
 }

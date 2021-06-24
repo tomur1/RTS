@@ -4,16 +4,18 @@ using DefaultNamespace;
 using UnitsAndTechs;
 using UnitsAndTechs.Units;
 using UnityEngine;
+using Object = System.Object;
 
 public class Worker : Unit, IMenuContainer
 {
-    public Worker()
+    public Worker(Player player)
     {
-        ConstructionCost = new ConstructionCost(50, 0, 0, 0, 0, 50);
+        ConstructionCost = new ConstructionCost(50, 0, 0, 0, 0, 10);
+        Player = player;
     }
     
     //Used for creation on map generation
-    public Worker(Player player, Vector2Int coord) : this()
+    public Worker(Player player, Vector2Int coord) : this(player)
     {
         InitValues(player, coord);
     }
@@ -21,17 +23,25 @@ public class Worker : Unit, IMenuContainer
     public override void InitValues(Player player, Vector2Int coord)
     {
         GridSize = Vector2.one;
-        Health = new Health(10);
+        Health = new Health(50, 50);
         Player = player;
         LeftTopCellCoord = coord;
+        BuildingSpeed = 10;
         AssetName = "Units/Worker";
         Groups = new HashSet<Group>();
-        
+        UnitState = UnitState.Standing;
         var mapElement = GameMaster.Instance.AddElementToGrid(this);
         var component = mapElement.GetComponent<WorkerUnity>();
         component.Worker = this;
         MapObject = mapElement;
     }
+    
+    public override int getRange()
+    {
+        return 1;
+    }
+
+    public int BuildingSpeed { get; set; }
 
     public override Vector2 GridSize { get; set; }
 
@@ -52,7 +62,7 @@ public class Worker : Unit, IMenuContainer
                 //Our Tc
                 if (tc.Player == Player && (tc.ConstructionCost.InConstruction || tc.Health.NotFull))
                 {
-                    //BuildOrRepair();
+                    GameMaster.Instance.MoveUnitWithAction(this, "RepairOrBuild", tc);
                 }
             }
         }
@@ -60,8 +70,6 @@ public class Worker : Unit, IMenuContainer
 
     public override Player Player { get; set; }
     private Dictionary<int, ButtonSpec> _buttonValuesSet;
-
-    public WorkerUnity WorkerUnity { get; set; }
 
     public Dictionary<int, ButtonSpec> GetButtonLayout()
     {
@@ -79,8 +87,26 @@ public class Worker : Unit, IMenuContainer
         return buttons;
     }
 
+    public void RepairOrBuild(Object[] buildingParam)
+    {
+        Building building = (Building) buildingParam[0];
+        GameMaster.Instance.RepairBuilding(this, building);
+    }
+
     public void BuildTownCenter()
     {
-        Debug.Log("Building Town Center");
+        var tc = new TownCenter(false);
+        if (Player.HasEnoughResources(tc.ConstructionCost))
+        {
+            Player.SubstractResources(tc.ConstructionCost);
+            tc.CreateFoundationUnityObject(this);
+            GameMaster.Instance.mode = Mode.Placing;
+        }
+        else
+        {
+            
+        }
+        
+        
     }
 }
