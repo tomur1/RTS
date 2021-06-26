@@ -108,31 +108,46 @@ namespace UnitsAndTechs
         public void CreateWorker()
         {
             //Check if enough resources and the start creation process
-            var worker = new Worker(Player);
-            if (Player.HasEnoughResources(worker.ConstructionCost))
+            if (Player.CanAddUnitToLimit)
             {
-                Player.SubtractResources(worker.ConstructionCost);
-                GameMaster.Instance.StartCoroutine(StartCreatingUnit(worker));
+                var worker = new Worker(Player);
+                if (Player.HasEnoughResources(worker.ConstructionCost))
+                {
+                    Player.SubtractResources(worker.ConstructionCost);
+                    GameMaster.Instance.StartCoroutine(StartCreatingUnit(worker));
+                }
+                else
+                {
+                    GameMaster.Instance.GuiManager.ShowMessage("Not enough resources");
+                }
             }
             else
             {
-                GameMaster.Instance.GuiManager.ShowMessage("Not enough resources");
+                GameMaster.Instance.GuiManager.ShowMessage("Not enough population");
             }
+            
             
         }
         
         public void CreateSoldier()
         {
             //Check if enough resources and the start creation process
-            var soldier = new Soldier(Player);
-            if (Player.HasEnoughResources(soldier.ConstructionCost))
+            if (Player.CanAddUnitToLimit)
             {
-                Player.SubtractResources(soldier.ConstructionCost);
-                GameMaster.Instance.StartCoroutine(StartCreatingUnit(soldier));
+                var soldier = new Soldier(Player);
+                if (Player.HasEnoughResources(soldier.ConstructionCost))
+                {
+                    Player.SubtractResources(soldier.ConstructionCost);
+                    GameMaster.Instance.StartCoroutine(StartCreatingUnit(soldier));
+                }
+                else
+                {
+                    GameMaster.Instance.GuiManager.ShowMessage("Not enough resources");
+                }
             }
             else
             {
-                GameMaster.Instance.GuiManager.ShowMessage("Not enough resources");
+                GameMaster.Instance.GuiManager.ShowMessage("Not enough population");
             }
             
         }

@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -31,11 +32,53 @@ public class Player
     private int playerScore;
     private float researchSpeed = 10;
     private float constructionSpeed = 10;
+    private static int MinCapacity = 10;
+    private static int MaxCapacity = 200;
+    private int UnitCapacityLimit = MinCapacity;
+    private int CurrentPopulation = 0;
     private Uranium uranium;
     private Oil oil;
     private Energy energy;
     private Metal metal;
     private Science science;
+
+    public void AddCapacity(int amount)
+    {
+        UnitCapacityLimit += amount;
+        if (UnitCapacityLimit > MaxCapacity)
+        {
+            UnitCapacityLimit = MaxCapacity;
+        }
+    }
+
+    public void RemoveCapacity(int amount)
+    {
+        UnitCapacityLimit -= amount;
+        if (UnitCapacityLimit < MinCapacity)
+        {
+            UnitCapacityLimit = MinCapacity;
+        }
+    }
+
+    public void AddPopulation(int amount)
+    {
+        CurrentPopulation += amount;
+        if (CurrentPopulation > UnitCapacityLimit)
+        {
+            throw new Exception("Cannot add units over limit");
+        }
+    }
+    
+    public void RemovePopulation(int amount)
+    {
+        CurrentPopulation -= amount;
+        if (CurrentPopulation < 0)
+        {
+            throw new Exception("Cannot have negative units");
+        }
+    }
+
+    public bool CanAddUnitToLimit => CurrentPopulation < UnitCapacityLimit;
 
     public Uranium Uranium
     {
@@ -127,6 +170,7 @@ public class Player
     {
         if (!Units.Contains(unit))
         {
+            AddPopulation(1);
             Units.Add(unit);
             unit.SetPlayer(this);
         }
@@ -136,6 +180,7 @@ public class Player
     {
         if (Units.Contains(unit))
         {
+            RemovePopulation(1);
             Units.Remove(unit);
             unit.SetPlayer(null);
         }
