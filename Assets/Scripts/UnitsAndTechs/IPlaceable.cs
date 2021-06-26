@@ -12,6 +12,8 @@ namespace UnitsAndTechs
         public string AssetName { get; set; }
         public Vector2Int LeftTopCellCoord { get; set; }
         public ConstructionCost ConstructionCost { get; set; }
+
+        
         
         public abstract Player Player { get; set; }
 

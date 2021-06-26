@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using DefaultNamespace;
 using TMPro.SpriteAssetUtilities;
 using UnitsAndTechs;
@@ -8,18 +9,14 @@ using UnityEngine;
 
 public class Player
 {
-    private List<Building> buildings;
-
     public List<Building> Buildings
     {
         get => buildings;
-        set => buildings = value;
     }
 
     public List<Unit> Units
     {
         get => units;
-        set => units = value;
     }
 
     public int PlayerScore
@@ -28,6 +25,7 @@ public class Player
         set => playerScore = value;
     }
 
+    private List<Building> buildings;
     private List<Unit> units;
     private readonly Color color;
     private int playerScore;
@@ -88,7 +86,7 @@ public class Player
     }
 
     private float unitTrainingSpeed = 10;
-    
+
     public Player(Color color)
     {
         buildings = new List<Building>();
@@ -101,26 +99,76 @@ public class Player
         Science = new Science();
         this.color = color;
     }
+
+    public void AddBuilding(Building building)
+    {
+        if (!Buildings.Contains(building))
+        {
+            Buildings.Add(building);
+            building.SetPlayer(this);
+        }
+    }
+
+    public void RemoveBuilding(Building building)
+    {
+        if (Buildings.Contains(building))
+        {
+            Buildings.Remove(building);
+            building.SetPlayer(null);
+        }
+    }
+
+    public ReadOnlyCollection<Building> GetBuildings()
+    {
+        return new ReadOnlyCollection<Building>(Buildings);
+    }
     
+    public void AddUnit(Unit unit)
+    {
+        if (!Units.Contains(unit))
+        {
+            Units.Add(unit);
+            unit.SetPlayer(this);
+        }
+    }
+
+    public void RemoveUnit(Unit unit)
+    {
+        if (Units.Contains(unit))
+        {
+            Units.Remove(unit);
+            unit.SetPlayer(null);
+        }
+    }
+
+    public ReadOnlyCollection<Unit> GetUnits()
+    {
+        return new ReadOnlyCollection<Unit>(Units);
+    }
+
     public bool HasEnoughResources(ConstructionCost constructionCost)
     {
         if (constructionCost.Energy > Energy.CollectedAmount)
         {
             Debug.Log("Not enough energy");
             return false;
-        }else if (constructionCost.Metal > Metal.CollectedAmount)
+        }
+        else if (constructionCost.Metal > Metal.CollectedAmount)
         {
             Debug.Log("Not enough metal");
             return false;
-        }else if (constructionCost.Oil > Oil.CollectedAmount)
+        }
+        else if (constructionCost.Oil > Oil.CollectedAmount)
         {
             Debug.Log("Not enough oil");
             return false;
-        }else if (constructionCost.Science > Science.CollectedAmount)
+        }
+        else if (constructionCost.Science > Science.CollectedAmount)
         {
             Debug.Log("Not enough science");
             return false;
-        }else if (constructionCost.Uranium > uranium.CollectedAmount)
+        }
+        else if (constructionCost.Uranium > uranium.CollectedAmount)
         {
             Debug.Log("Not enough uranium");
             return false;
@@ -129,14 +177,12 @@ public class Player
         return true;
     }
 
-    public void SubstractResources(ConstructionCost constructionCost)
+    public void SubtractResources(ConstructionCost constructionCost)
     {
-        Energy.CollectedAmount -= constructionCost.Energy;
-        Metal.CollectedAmount -= constructionCost.Metal;
-        Uranium.CollectedAmount -= constructionCost.Uranium;
-        Science.CollectedAmount -= constructionCost.Science;
-        Oil.CollectedAmount -= constructionCost.Oil;
+        Energy.SubtractResource(constructionCost.Energy);
+        Metal.SubtractResource(constructionCost.Metal);
+        Uranium.SubtractResource(constructionCost.Uranium);
+        Science.SubtractResource(constructionCost.Science);
+        Oil.SubtractResource(constructionCost.Oil);
     }
-    
-    
 }

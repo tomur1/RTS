@@ -23,7 +23,7 @@ public class Soldier : Unit
         AssetName = "Units/Soldier";
         Groups = new Dictionary<int, Group>();
         UnitState = UnitState.Standing;
-        AttackAbility = new AttackAbility(4, 5, 1f);
+        AttackAbility.CreateAndAssign(4, 5, 1f, this);
         var mapElement = GameMaster.Instance.AddElementToGrid(this);
         var component = mapElement.GetComponent<SoldierUnity>();
         component.Soldier = this;
@@ -58,8 +58,7 @@ public class Soldier : Unit
         IPlaceable target = (IPlaceable) targetParam[0];
         GameMaster.Instance.Attack(this, target);
     }
-
-    public override Player Player { get; set; }
+    
     public override int getRange()
     {
         return AttackAbility.range;

@@ -34,13 +34,45 @@ namespace UnitsAndTechs.Units
             Player.Units.Remove(this);
             GameMaster.Instance.DestroyMapObject(MapObject);
         }
+        
+        public void SetPlayer(Player player)
+        {
+            if (player == null)
+            {
+                if (this.player != null)
+                {
+                    Player tmp = this.player;
+                    this.player = null;
+                    tmp.RemoveUnit(this);
+                }
+            }
+            else
+            {
+                if (this.player != player)
+                {
+                    if (this.player != null)
+                    {
+                        this.player.RemoveUnit(this);
+                    }
+
+                    player.AddUnit(this);
+                    this.player = player;
+                }
+            }
+        }
 
         public abstract int ConstructionMultiplier { get; set; }
         public Health Health { get; set; }
 
         public abstract void HandleRightClick(Cell clickedCell);
         
-        public abstract Player Player { get; set; }
+        private Player player;
+
+        public Player Player
+        {
+            get => player;
+            set => SetPlayer(value);
+        }
 
         public UnitState UnitState;
 

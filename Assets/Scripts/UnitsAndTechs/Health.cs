@@ -29,6 +29,7 @@ namespace DefaultNamespace
                 oldHealth.RemoveElement();
             }
 
+            element.Health = this;
             this.element = element;
         }
 

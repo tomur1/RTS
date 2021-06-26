@@ -111,7 +111,7 @@ namespace UnitsAndTechs
             var worker = new Worker(Player);
             if (Player.HasEnoughResources(worker.ConstructionCost))
             {
-                Player.SubstractResources(worker.ConstructionCost);
+                Player.SubtractResources(worker.ConstructionCost);
                 GameMaster.Instance.StartCoroutine(StartCreatingUnit(worker));
             }
             else
@@ -127,7 +127,7 @@ namespace UnitsAndTechs
             var soldier = new Soldier(Player);
             if (Player.HasEnoughResources(soldier.ConstructionCost))
             {
-                Player.SubstractResources(soldier.ConstructionCost);
+                Player.SubtractResources(soldier.ConstructionCost);
                 GameMaster.Instance.StartCoroutine(StartCreatingUnit(soldier));
             }
             else

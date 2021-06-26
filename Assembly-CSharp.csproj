@@ -49,7 +49,7 @@
      <Compile Include="Assets\Scripts\UnitsAndTechs\Units\Unit.cs" />
      <Compile Include="Assets\Scripts\MultipleObjectInformation.cs" />
      <Compile Include="Assets\Scripts\UnitsAndTechs\Building.cs" />
-     <Compile Include="Assets\SoldierUnity.cs" />
+     <Compile Include="Assets\Scripts\SoldierUnity.cs" />
      <Compile Include="Assets\Scripts\AttackAbility.cs" />
      <Compile Include="Assets\RTS_Camera\Scripts\RTS_Camera.cs" />
      <Compile Include="Assets\Scripts\Player.cs" />
@@ -60,11 +60,11 @@
      <Compile Include="Assets\Scripts\ButtonSpec.cs" />
      <Compile Include="Assets\Scripts\Grid\Cell.cs" />
      <Compile Include="Assets\Scripts\UnitsAndTechs\Units\Worker.cs" />
-     <Compile Include="Assets\SelectionIndicator.cs" />
+     <Compile Include="Assets\Scripts\SelectionIndicator.cs" />
      <Compile Include="Assets\Scripts\MapElements\UraniumSource.cs" />
      <Compile Include="Assets\Scripts\UnitsAndTechs\Technologies\Technology.cs" />
      <Compile Include="Assets\Scripts\MapCreator.cs" />
-     <Compile Include="Assets\FoundationUnity.cs" />
+     <Compile Include="Assets\Scripts\FoundationUnity.cs" />
      <Compile Include="Assets\Scripts\UnitsAndTechs\Health.cs" />
      <Compile Include="Assets\Scripts\UnitsAndTechs\IPlaceable.cs" />
      <Compile Include="Assets\Scripts\Mode.cs" />
@@ -81,7 +81,7 @@
      <Compile Include="Assets\Scripts\OilUnity.cs" />
      <Compile Include="Assets\Scripts\Pathfinding\Pathfinding.cs" />
      <Compile Include="Assets\Scripts\UnitsAndTechs\ConstructionCost.cs" />
-     <Compile Include="Assets\GuiResourcePanel.cs" />
+     <Compile Include="Assets\Scripts\GuiResourcePanel.cs" />
      <Compile Include="Assets\Scripts\Group.cs" />
      <Compile Include="Assets\Scripts\GameMaster.cs" />
      <Compile Include="Assets\Scripts\MapElements\Resources\Science.cs" />

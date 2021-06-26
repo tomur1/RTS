@@ -65,8 +65,7 @@ public class Worker : Unit, IMenuContainer
             }
         }
     }
-
-    public override Player Player { get; set; }
+    
     private Dictionary<int, ButtonSpec> _buttonValuesSet;
 
     public Dictionary<int, ButtonSpec> GetButtonLayout()
@@ -96,7 +95,7 @@ public class Worker : Unit, IMenuContainer
         var tc = new TownCenter(false);
         if (Player.HasEnoughResources(tc.ConstructionCost))
         {
-            Player.SubstractResources(tc.ConstructionCost);
+            Player.SubtractResources(tc.ConstructionCost);
             tc.CreateFoundationUnityObject(this);
             GameMaster.Instance.mode = Mode.Placing;
         }

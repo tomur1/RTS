@@ -24,6 +24,24 @@ public abstract class Resource
         set => capacity = value;
     }
 
+    public void AddResource(int amount)
+    {
+        CollectedAmount += amount;
+        if (CollectedAmount < Capacity)
+        {
+            CollectedAmount = Capacity;
+        }
+    }
+
+    public void SubtractResource(int amount)
+    {
+        CollectedAmount -= amount;
+        if (CollectedAmount < 0)
+        {
+            CollectedAmount = 0;
+        }
+    }
+
     protected int collectedAmount;
     protected int capacity;
 }
