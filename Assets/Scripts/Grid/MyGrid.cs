@@ -84,7 +84,7 @@ public class MyGrid
         }
         
         var newTakenCoords = CoordsTakenByElement(element, newPos);
-        foreach (var coord in takenCoords)
+        foreach (var coord in newTakenCoords)
         {
             GetCellWithCoord(coord).Elements.Add(element);
         }
@@ -105,6 +105,10 @@ public class MyGrid
                 {
                     Debug.DrawLine(GetWorldPos(i,j), GetWorldPos(i+1,j+1), Color.red, Time.deltaTime);
                     Debug.DrawLine(GetWorldPos(i,j+1), GetWorldPos(i+1,j), Color.red, Time.deltaTime);
+                }else if (cell.Elements.Count != 0)
+                {
+                    Debug.DrawLine(GetWorldPos(i,j), GetWorldPos(i+1,j+1), Color.green, Time.deltaTime);
+                    Debug.DrawLine(GetWorldPos(i,j+1), GetWorldPos(i+1,j), Color.green, Time.deltaTime);
                 }
             }
         }

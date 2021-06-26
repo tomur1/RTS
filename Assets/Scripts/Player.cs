@@ -94,10 +94,10 @@ public class Player
         buildings = new List<Building>();
         units = new List<Unit>();
         playerScore = 0;
-        Energy = new Energy(100);
+        Energy = new Energy(1000);
         Uranium = new Uranium();
-        Oil = new Oil();
-        Metal = new Metal(100);
+        Oil = new Oil(1000);
+        Metal = new Metal(1000);
         Science = new Science();
         this.color = color;
     }

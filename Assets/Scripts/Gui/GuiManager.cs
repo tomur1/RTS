@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using Gui;
+using TMPro;
 using UnityEngine;
 
 public class GuiManager : MonoBehaviour
@@ -10,6 +11,9 @@ public class GuiManager : MonoBehaviour
     private SelectedObjectInformation selectedObjectInformation;
     private MultipleObjectInformation multipleObjectInformation;
     private MinimapGui minimapGui;
+    [SerializeField] private GameObject PauseMenuPanel;
+    [SerializeField] private TextMeshProUGUI userInfoText;
+    private Coroutine messageCoroutine;
 
     private void Awake()
     {
@@ -22,6 +26,28 @@ public class GuiManager : MonoBehaviour
     private void Start()
     {
         multipleObjectInformation.gameObject.SetActive(false);
+        userInfoText.SetText("");
+    }
+
+    public void ShowMessage(string message)
+    {
+        if (messageCoroutine != null)
+        {
+            StopCoroutine(messageCoroutine);
+        }
+        messageCoroutine = StartCoroutine(ShowMessageEnum(message));
+    }
+
+    public void SwitchPausePanelActive()
+    {
+        PauseMenuPanel.SetActive(!PauseMenuPanel.activeSelf);
+    }
+
+    private IEnumerator ShowMessageEnum(string message)
+    {
+        userInfoText.SetText(message);
+        yield return new WaitForSeconds(3f);
+        userInfoText.SetText("");
     }
 
     public MultipleObjectInformation MultipleObjectInformation

@@ -21,5 +21,6 @@ namespace UnitsAndTechs
 
 
         public void InitValues(Player player, Vector2Int coord);
+        public void Destroyed();
     }
 }

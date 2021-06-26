@@ -23,12 +23,12 @@ public class Worker : Unit, IMenuContainer
     public override void InitValues(Player player, Vector2Int coord)
     {
         GridSize = Vector2.one;
-        Health = new Health(50, 50);
+        Health.CreateAndAssign(50, 50, this);
         Player = player;
         LeftTopCellCoord = coord;
         BuildingSpeed = 10;
         AssetName = "Units/Worker";
-        Groups = new HashSet<Group>();
+        Groups = new Dictionary<int, Group>();
         UnitState = UnitState.Standing;
         var mapElement = GameMaster.Instance.AddElementToGrid(this);
         var component = mapElement.GetComponent<WorkerUnity>();
@@ -58,11 +58,9 @@ public class Worker : Unit, IMenuContainer
         {
             if (placeable.GetType() == typeof(TownCenter))
             {
-                var tc =  (TownCenter) placeable;
-                //Our Tc
-                if (tc.Player == Player && (tc.ConstructionCost.InConstruction || tc.Health.NotFull))
+                if (placeable.Player == Player && (placeable.ConstructionCost.InConstruction || placeable.Health.NotFull))
                 {
-                    GameMaster.Instance.MoveUnitWithAction(this, "RepairOrBuild", tc);
+                    GameMaster.Instance.MoveUnitWithAction(this, "RepairOrBuild", placeable);
                 }
             }
         }
@@ -104,7 +102,7 @@ public class Worker : Unit, IMenuContainer
         }
         else
         {
-            
+            GameMaster.Instance.GuiManager.ShowMessage("Not enough resources");
         }
         
         

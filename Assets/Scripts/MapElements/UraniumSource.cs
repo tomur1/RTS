@@ -26,6 +26,11 @@ public class UraniumSource : IPlaceable
         MapObject = mapElement;
     }
 
+    public void Destroyed()
+    {
+        throw new System.NotImplementedException();
+    }
+
     public UraniumSource()
     {
         GridMultiplier = 2;

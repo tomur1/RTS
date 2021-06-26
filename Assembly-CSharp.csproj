@@ -49,6 +49,7 @@
      <Compile Include="Assets\Scripts\UnitsAndTechs\Units\Unit.cs" />
      <Compile Include="Assets\Scripts\MultipleObjectInformation.cs" />
      <Compile Include="Assets\Scripts\UnitsAndTechs\Building.cs" />
+     <Compile Include="Assets\SoldierUnity.cs" />
      <Compile Include="Assets\Scripts\AttackAbility.cs" />
      <Compile Include="Assets\RTS_Camera\Scripts\RTS_Camera.cs" />
      <Compile Include="Assets\Scripts\Player.cs" />

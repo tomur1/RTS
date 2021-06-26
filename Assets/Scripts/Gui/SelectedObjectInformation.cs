@@ -3,6 +3,7 @@ using TMPro;
 using UnitsAndTechs;
 using UnitsAndTechs.Units;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace Gui
 {
@@ -10,16 +11,17 @@ namespace Gui
     {
         [SerializeField] private TextMeshProUGUI ObjectName;
         [SerializeField] private TextMeshProUGUI Groups;
-        [SerializeField] private TextMeshProUGUI AttackType;
         [SerializeField] private TextMeshProUGUI AttackPower;
         [SerializeField] private TextMeshProUGUI AttackSpeed;
         [SerializeField] private TextMeshProUGUI AttackRange;
+        [SerializeField] private Slider HealthBar;
+        private IPlaceable selectedObject;
 
         public void UpdateView(Unit worker)
         {
+            selectedObject = worker;
             String objectNameText = "";
             String groupsText = "";
-            String attackTypeText = "";
             String attackPowerText = "";
             String attackSpeedText = "";
             String attackRangeText = "";
@@ -31,20 +33,43 @@ namespace Gui
             {
                 objectNameText = worker.GetType().Name;
                 groupsText = worker.GroupsNumberString();
-                attackTypeText = "";
                 attackPowerText = "";
                 attackSpeedText = "";
                 attackRangeText = "";
             }
             
-            SetAllValues(objectNameText, groupsText, attackTypeText, attackPowerText, attackSpeedText, attackRangeText);
+            SetAllValues(objectNameText, groupsText, attackPowerText, attackSpeedText, attackRangeText);
+        }
+        
+        public void UpdateView(Soldier soldier)
+        {
+            selectedObject = soldier;
+            String objectNameText = "";
+            String groupsText = "";
+            String attackPowerText = "";
+            String attackSpeedText = "";
+            String attackRangeText = "";
+            if (soldier == null)
+            {
+                EmptyView();
+            }
+            else
+            {
+                objectNameText = soldier.GetType().Name;
+                groupsText = soldier.GroupsNumberString();
+                attackPowerText = "Attack Power: " + soldier.AttackAbility.attackPower;
+                attackSpeedText = "Attack Speed:" + soldier.AttackAbility.GetAttackSpeed();
+                attackRangeText = "Attack Range:" + soldier.AttackAbility.range;
+            }
+            
+            SetAllValues(objectNameText, groupsText, attackPowerText, attackSpeedText, attackRangeText);
         }
 
         public void UpdateView(Building building)
         {
+            selectedObject = building;
             String objectNameText = "";
             String groupsText = "";
-            String attackTypeText = "";
             String attackPowerText = "";
             String attackSpeedText = "";
             String attackRangeText = "";
@@ -56,20 +81,18 @@ namespace Gui
             {
                 objectNameText = building.GetType().Name;
                 groupsText = "";
-                attackTypeText = "";
                 attackPowerText = "";
                 attackSpeedText = "";
                 attackRangeText = "";
             }
-            SetAllValues(objectNameText, groupsText, attackTypeText, attackPowerText, attackSpeedText, attackRangeText);
+            SetAllValues(objectNameText, groupsText, attackPowerText, attackSpeedText, attackRangeText);
         }
 
-        public void SetAllValues(String objectNameText, String groupsText, String attackTypeText,
+        public void SetAllValues(String objectNameText, String groupsText,
             String attackPowerText, String attackSpeedText, String attackRangeText)
         {
             ObjectName.SetText(objectNameText);
             Groups.SetText(groupsText);
-            AttackType.SetText(attackTypeText);
             AttackPower.SetText(attackPowerText);
             AttackRange.SetText(attackSpeedText);
             AttackSpeed.SetText(attackRangeText);
@@ -77,7 +100,16 @@ namespace Gui
 
         public void EmptyView()
         {
-            SetAllValues("No objects selected", "", "", "", "", "");
+            SetAllValues("No objects selected", "", "", "", "");
+            selectedObject = null;
+        }
+
+        private void Update()
+        {
+            if (selectedObject != null)
+            {
+                HealthBar.value = selectedObject.Health.Percentage;
+            }
         }
     }
 }

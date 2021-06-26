@@ -25,7 +25,7 @@ public class GameMaster : MonoBehaviour
     public GameObject SelectionIndicatorPrefab;
     public Camera mainCamera;
     private List<GameObject> DebugObjects;
-    private Dictionary<Unit, Coroutine> runningRoutines;
+    private Dictionary<IPlaceable, Coroutine> runningRoutines;
     private List<Player> playersInGame;
     public Player player;
     public Mode mode;
@@ -37,6 +37,7 @@ public class GameMaster : MonoBehaviour
             Instance = this;
             SelectionManager = new SelectionManager();
             mainCamera = Camera.main;
+            player = new Player(Color.red);
         }
         else
         {
@@ -49,33 +50,37 @@ public class GameMaster : MonoBehaviour
         grid = new MyGrid(100, 100, 1, Vector3.zero);
         mode = Mode.Normal;
         DebugObjects = new List<GameObject>();
-        runningRoutines = new Dictionary<Unit, Coroutine>();
-        
+        runningRoutines = new Dictionary<IPlaceable, Coroutine>();
         NormalInputHandler = FindObjectOfType<NormalInputHandler>();
         GuiManager = FindObjectOfType<GuiManager>();
         new Pathfinding();
         MapCreator.FillGrid(grid);
         playersInGame = new List<Player>();
-        player = new Player(Color.blue);
         playersInGame.Add(player);
+        playersInGame.Add(new Player(Color.blue));
         MapCreator.SpawnPlayers(grid, playersInGame);
-        
+        Group.InitializeAllGroups();
     }
 
     public void SelectionChanged()
     {
         if (SelectionManager.selectedTable.Count == 0)
         {
+            GuiManager.MultipleObjectInformation.gameObject.SetActive(false);
+            GuiManager.SelectedObjectInformation.gameObject.SetActive(true);
             GuiManager.SelectedObjectInformation.EmptyView();
             GuiManager.SelectedObjectMenu.EmptyView();
-            return;
-        }
-        //If there is more than 1 unit selected
-        if (SelectionManager.selectedTable.Count > 1)
+        } else if (SelectionManager.selectedTable.Count > 1)
         {
+            GuiManager.MultipleObjectInformation.gameObject.SetActive(true);
             GuiManager.MultipleObjectInformation.UpdateView(SelectionManager);
+            GuiManager.SelectedObjectInformation.EmptyView();
+            GuiManager.SelectedObjectInformation.gameObject.SetActive(false);
+            GuiManager.SelectedObjectMenu.EmptyView();
         }else
         {
+            GuiManager.MultipleObjectInformation.gameObject.SetActive(false);
+            GuiManager.SelectedObjectInformation.gameObject.SetActive(true);
             var element = SelectionManager.selectedTable.ElementAt(0).Value;
             if (element.GetComponent<WorkerUnity>() != null)
             {
@@ -91,6 +96,11 @@ public class GameMaster : MonoBehaviour
                     GuiManager.SelectedObjectMenu.SwitchObject(townCenter);
                 }
                 
+            }else if (element.GetComponent<SoldierUnity>() != null)
+            {
+                var soldier = element.GetComponent<SoldierUnity>().Soldier;
+                GuiManager.SelectedObjectInformation.UpdateView(soldier);
+                GuiManager.SelectedObjectMenu.EmptyView();
             }
         }
     }
@@ -104,6 +114,9 @@ public class GameMaster : MonoBehaviour
         }else if (selection.GetComponent<TownCenterUnity>() != null)
         {
             createdIndicator.GetComponent<SelectionIndicator>().SetElement(selection.GetComponent<TownCenterUnity>().TownCenter);
+        }else if (selection.GetComponent<SoldierUnity>() != null)
+        {
+            createdIndicator.GetComponent<SelectionIndicator>().SetElement(selection.GetComponent<SoldierUnity>().Soldier);
         }
     }
     
@@ -168,6 +181,22 @@ public class GameMaster : MonoBehaviour
         }
     }
 
+    public void SwitchPauseGame()
+    {
+        if (mode == Mode.Normal)
+        {
+            mode = Mode.Paused;
+            Time.timeScale = 0;
+        }
+        else if(mode == Mode.Paused)
+        {
+            mode = Mode.Normal;
+            Time.timeScale = 1;
+        }
+
+        GuiManager.SwitchPausePanelActive();
+    }
+
     private void PlacingInputHandle()
     {
         
@@ -175,9 +204,9 @@ public class GameMaster : MonoBehaviour
 
     private void PauseInputHandle()
     {
-        if (Input.GetMouseButtonDown(0))
+        if (Input.GetButtonDown("Cancel"))
         {
-
+            SwitchPauseGame();
         }
     }
 
@@ -197,6 +226,11 @@ public class GameMaster : MonoBehaviour
             {
                 var townCenter = element.GetComponent<TownCenterUnity>().TownCenter;
                 unitSpawners.Add(townCenter);
+            }
+            else if (element.GetComponent<SoldierUnity>() != null)
+            {
+                var soldier = element.GetComponent<SoldierUnity>().Soldier;
+                units.Add(soldier);
             }
         }
         
@@ -223,7 +257,14 @@ public class GameMaster : MonoBehaviour
         }
 
     }
-    
+
+    public void SetSelectionTo(GameObject gameObject)
+    {
+        SelectionManager.deselectAll();
+        SelectionManager.addSelected(gameObject);
+        SelectionChanged();
+    }
+
     public void MoveUnit(Unit unit, List<Vector3> path)
     {
         if (runningRoutines.ContainsKey(unit))
@@ -261,16 +302,16 @@ public class GameMaster : MonoBehaviour
     IEnumerator moveUnitEnum(Unit unit, List<Vector3> path)
     {
         var rb = unit.MapObject.GetComponent<Rigidbody>();
-        foreach (var pathpoint in path)
+        foreach (var pathPoint in path)
         {
-            while (Vector3.Distance(unit.MapObject.transform.position, pathpoint) > 0.1f)
+            while (Vector3.Distance(unit.MapObject.transform.position, pathPoint) > 0.1f)
             {
                 var unitPosition = unit.MapObject.transform.position;
-                var movingTowards = (unitPosition - pathpoint).normalized * (unit.MovementSpeed * Time.deltaTime);
+                var movingTowards = (unitPosition - pathPoint).normalized * (unit.MovementSpeed * Time.deltaTime);
                 rb.MovePosition(unitPosition - movingTowards);
                 yield return null;
             }
-            grid.UpdateElementPosition(unit, grid.GetCell(pathpoint).GridPosition);
+            grid.UpdateElementPosition(unit, grid.GetCell(pathPoint).GridPosition);
         }
         
         yield return null;
@@ -287,9 +328,13 @@ public class GameMaster : MonoBehaviour
                 PerformAction(actionName, unit, new object[]{new object[]{target}});
                 break;
             }
-            var closestCell = grid.GetClosestCellInRangeTo(unit, target);
-            var path = Pathfinding.Instance.FindPath(unit.MapObject.transform.position, grid.GetWorldPos(closestCell.GridPosition.x, closestCell.GridPosition.y)).GetRange(0,2);
-            yield return moveUnitEnum(unit, path);
+            else
+            {
+                var closestCell = grid.GetClosestCellInRangeTo(unit, target);
+                var path = Pathfinding.Instance.FindPath(unit.MapObject.transform.position, grid.GetWorldPos(closestCell.GridPosition.x, closestCell.GridPosition.y)).GetRange(0,2);
+                yield return moveUnitEnum(unit, path);
+            }
+            
         }
     }
     
@@ -331,11 +376,57 @@ public class GameMaster : MonoBehaviour
         }
     }
 
-    public UnityAction PerformAction(String actionName, Object actionObject, Object[] parameters = null)
+    public void Attack(Soldier soldier, IPlaceable target)
+    {
+        if (runningRoutines.ContainsKey(soldier))
+        {
+            if (runningRoutines[soldier] != null)
+            {
+                StopCoroutine(runningRoutines[soldier]);
+            }
+            runningRoutines[soldier] = StartCoroutine(AttackEnum(soldier, target));
+        }
+        else
+        {
+            runningRoutines.Add(soldier, StartCoroutine(AttackEnum(soldier, target)));    
+        }
+    }
+
+    public IEnumerator AttackEnum(Soldier soldier, IPlaceable target)
+    {
+        while (target.Health.CurrentAmount > 0)
+        {
+            if (grid.InRange(soldier.LeftTopCellCoord, soldier.getRange(), target))
+            {
+                target.Health.RemoveHealth(soldier.AttackAbility.attackPower);
+                yield return new WaitForSeconds(soldier.AttackAbility.attackDelay);
+            }
+            else
+            {
+                var closestCell = grid.GetClosestCellInRangeTo(soldier, target);
+                var path = Pathfinding.Instance.FindPath(soldier.MapObject.transform.position, grid.GetWorldPos(closestCell.GridPosition.x, closestCell.GridPosition.y)).GetRange(0,2);
+                yield return moveUnitEnum(soldier, path);
+            }
+        }
+        
+    }
+
+    public void StopCoroutinesForObject(IPlaceable placeable)
+    {
+        if (runningRoutines.ContainsKey(placeable))
+        {
+            if (runningRoutines[placeable] != null)
+            {
+                StopCoroutine(runningRoutines[placeable]);
+            }
+        }
+    }
+
+    public void PerformAction(String actionName, Object actionObject, Object[] parameters = null)
     {
         Type thisType = actionObject.GetType();
         MethodInfo theMethod = thisType.GetMethod(actionName);
         theMethod.Invoke(actionObject, parameters);
-        return null;
-    } 
+    }
+    
 }

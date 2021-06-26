@@ -21,7 +21,6 @@ public class SelectionManager
         {
             selectedTable.Add(id, go);
             GameMaster.Instance.AddSelectionIndicator(go);
-            Debug.Log("Added " + go.name + " to selected dict");
         }
         changed = true;
     }

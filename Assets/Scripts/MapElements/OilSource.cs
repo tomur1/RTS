@@ -27,6 +27,11 @@ public class OilSource : IPlaceable
         MapObject = mapElement;
     }
 
+    public void Destroyed()
+    {
+        throw new System.NotImplementedException();
+    }
+
     public OilSource()
     {
         GridMultiplier = 2;

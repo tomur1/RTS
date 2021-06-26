@@ -26,7 +26,7 @@ namespace UnitsAndTechs
                 ConstructionCost = new ConstructionCost(500, 200,
                     0, 0, 0, 50);
             }
-            Health = new Health(0, ConstructionCost.ConstructionDifficulty);
+            Health = Health.CreateAndAssign(0, ConstructionCost.ConstructionDifficulty, this);
 
         }
 
@@ -38,7 +38,7 @@ namespace UnitsAndTechs
         {
             LeftTopCellCoord = coord;
             Player = player;
-            Health = new Health(500, ConstructionCost.ConstructionDifficulty);
+            Health = Health.CreateAndAssign(500, ConstructionCost.ConstructionDifficulty, this);
             SpawnPoint = LeftTopCellCoord - Vector2Int.one;
             AssetName = "Buildings/Town Center";
             if (!GameMaster.Instance.grid.InBounds(SpawnPoint))
@@ -54,7 +54,7 @@ namespace UnitsAndTechs
             LeftTopCellCoord = coord;
             Player = player;
             AssetName = "Buildings Transparent/Town Center";
-            Health = new Health(0, ConstructionCost.ConstructionDifficulty);
+            Health = Health.CreateAndAssign(0, ConstructionCost.ConstructionDifficulty, this);
             GameMaster.Instance.grid.AddElement(this);
         }
 
@@ -98,7 +98,9 @@ namespace UnitsAndTechs
             Dictionary<int, ButtonSpec> buttons = new Dictionary<int, ButtonSpec>();
 
             ButtonSpec worker = new ButtonSpec("Worker", 0, "CreateWorker");
+            ButtonSpec soldier = new ButtonSpec("Soldier", 1, "CreateSoldier");
             buttons.Add(worker.ButtonIdx, worker);
+            buttons.Add(soldier.ButtonIdx, soldier);
             _buttonValuesSet = buttons;
             return buttons;
         }
@@ -111,6 +113,26 @@ namespace UnitsAndTechs
             {
                 Player.SubstractResources(worker.ConstructionCost);
                 GameMaster.Instance.StartCoroutine(StartCreatingUnit(worker));
+            }
+            else
+            {
+                GameMaster.Instance.GuiManager.ShowMessage("Not enough resources");
+            }
+            
+        }
+        
+        public void CreateSoldier()
+        {
+            //Check if enough resources and the start creation process
+            var soldier = new Soldier(Player);
+            if (Player.HasEnoughResources(soldier.ConstructionCost))
+            {
+                Player.SubstractResources(soldier.ConstructionCost);
+                GameMaster.Instance.StartCoroutine(StartCreatingUnit(soldier));
+            }
+            else
+            {
+                GameMaster.Instance.GuiManager.ShowMessage("Not enough resources");
             }
             
         }

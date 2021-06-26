@@ -30,6 +30,13 @@ public abstract class Building : IPlaceable
             ConstructionFinished();
         }
     }
+    
+    public void Destroyed()
+    {
+        GameMaster.Instance.grid.RemoveElement(this);
+        Player.Buildings.Remove(this);
+        GameMaster.Instance.DestroyMapObject(MapObject);
+    }
 
     protected abstract void ConstructionFinished();
 }

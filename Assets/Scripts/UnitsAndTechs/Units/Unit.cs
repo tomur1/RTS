@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using DefaultNamespace;
 using UnityEngine;
 
@@ -18,9 +19,22 @@ namespace UnitsAndTechs.Units
         public string AssetName { get; set; }
         public Vector2Int LeftTopCellCoord { get; set; }
         public ConstructionCost ConstructionCost { get; set; }
-        public HashSet<Group> Groups { get; set; }
+        public Dictionary<int,Group> Groups { get; set; }
         public GameObject MapObject { get; set; }
         public abstract void InitValues(Player player, Vector2Int coord);
+        public void Destroyed()
+        {
+            foreach (var group in Groups.Values.ToList())
+            {
+                group.RemoveUnit(this);
+            }
+            
+            GameMaster.Instance.grid.RemoveElement(this);
+            GameMaster.Instance.StopCoroutinesForObject(this);
+            Player.Units.Remove(this);
+            GameMaster.Instance.DestroyMapObject(MapObject);
+        }
+
         public abstract int ConstructionMultiplier { get; set; }
         public Health Health { get; set; }
 
@@ -49,13 +63,37 @@ namespace UnitsAndTechs.Units
 
         public List<int> GroupsNumbers()
         {
-            List<int> groups = new List<int>();
-            foreach (var group in Groups)
-            {
-                groups.Add(group.Number);
-            }
+            return new List<int>(Groups.Keys);
+        }
 
-            return groups;
+        public void AddToGroup(int groupNumber)
+        {
+            Group group;
+            if (Groups.ContainsKey(groupNumber))
+            {
+                group = Groups[groupNumber];
+            }
+            else
+            {
+                group = Group.GetGroupWithNumber(groupNumber);
+            }
+            
+            group.AddUnit(this);
+        }
+
+        public void RemoveFromGroup(int groupNumber)
+        {
+            Group group;
+            if (Groups.ContainsKey(groupNumber))
+            {
+                group = Groups[groupNumber];
+            }
+            else
+            {
+                group = Group.GetGroupWithNumber(groupNumber);
+            }
+            
+            group.RemoveUnit(this);
         }
 
         public String GroupsNumberString()
