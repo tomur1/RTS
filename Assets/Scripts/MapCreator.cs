@@ -54,7 +54,6 @@ public class MapCreator : MonoBehaviour
             var emptyPos = grid.FindClosestEmptyPos(tc, points[i]);
             tc.LeftTopCellCoord = emptyPos.GridPosition;
             tc.InitValues(players[i], points[i]);
-            players[i].Buildings.Add(tc);
         }
     }
 

@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using DataHolders;
 using DefaultNamespace;
 using UnitsAndTechs;
 using UnitsAndTechs.Units;
@@ -26,7 +27,7 @@ public class GameMaster : MonoBehaviour
     public Camera mainCamera;
     private List<GameObject> DebugObjects;
     private Dictionary<IPlaceable, Coroutine> runningRoutines;
-    private List<Player> playersInGame;
+    public List<Player> playersInGame;
     public Player player;
     public Mode mode;
 
@@ -162,6 +163,95 @@ public class GameMaster : MonoBehaviour
         {
             DebugObjects.Add(Instantiate(DebugPrefab, vec3, Quaternion.identity));
         }
+    }
+
+    public void SaveGame()
+    {
+        DataSaver.SaveData();
+    }
+
+    public void LoadGame()
+    {
+        var dataHolder = DataSaver.LoadData();
+        ClearGame();
+        LoadFromDataHolder(dataHolder);
+    }
+
+    private void LoadFromDataHolder(DataHolder dataHolder)
+    {
+        foreach (var playerInfoHolder in dataHolder.PlayersData)
+        {
+            var player = new Player(playerInfoHolder.Color);
+            player.Energy = playerInfoHolder.Energy;
+            player.Uranium = playerInfoHolder.Uranium;
+            player.Metal = playerInfoHolder.Metal;
+            player.Science = playerInfoHolder.Science;
+            player.Oil = playerInfoHolder.Oil;
+
+            player.PlayerScore = playerInfoHolder.PlayerScore;
+            foreach (var element in playerInfoHolder.Buildings)
+            {
+                if (element.TypeName == nameof(TownCenter))
+                {
+                    var newElement = new TownCenter(false);
+                    newElement.InitValues(player, element.LeftTopCellCoord);
+                    Health.CreateAndAssign(element.Health.CurrentAmount, element.Health.MaxAmount, newElement);
+                    newElement.ConstructionCost = element.Cost;
+                }
+            }
+            foreach (var unitInfoHolder in playerInfoHolder.Units)
+            {
+                Unit unit = null;
+                if (unitInfoHolder.TypeName == nameof(Worker))
+                {
+                    unit = new Worker(player);
+                    
+                }else if (unitInfoHolder.TypeName == nameof(Soldier))
+                {
+                    unit = new Soldier(player);
+                }
+                
+                unit.InitValues(player, unitInfoHolder.LeftTopCellCoord);
+                Health.CreateAndAssign(unitInfoHolder.Health.CurrentAmount, unitInfoHolder.Health.MaxAmount, unit);
+                unit.ConstructionCost = unitInfoHolder.Cost;
+                foreach (var groupNumber in unitInfoHolder.Groups)
+                {
+                    unit.AddToGroup(groupNumber);
+                }
+            }
+            playersInGame.Add(player);
+            if (player.Color == dataHolder.MainPlayerColor)
+            {
+                this.player = player;
+            }
+        }
+        
+        foreach (var notPlayerElement in dataHolder.MapElements)
+        {
+            IPlaceable placeable = null;
+            if (notPlayerElement.TypeName == nameof(OilSource))
+            {
+                placeable = new OilSource();
+            }else if (notPlayerElement.TypeName == nameof(UraniumSource))
+            {
+                placeable = new UraniumSource();
+            }
+            placeable.InitValues(null, notPlayerElement.LeftTopCellCoord);
+        }
+        
+        mainCamera.transform.position = dataHolder.CameraPosition;
+    }
+
+    private void ClearGame()
+    {
+        foreach (var element in grid.GetElementsOnMap().ToList())
+        {
+            element.Destroyed();
+        }
+        playersInGame.Clear();
+        GuiManager.SelectedObjectInformation.EmptyView();
+        GuiManager.SelectedObjectMenu.EmptyView();
+        GuiManager.MultipleObjectInformation.EmptyView();
     }
 
     private void Update()
@@ -316,9 +406,7 @@ public class GameMaster : MonoBehaviour
         
         yield return null;
     }
-    
-    
-    
+
     IEnumerator moveUnitWithActionEnum(Unit unit, String actionName, IPlaceable target)
     {
         while (true)
@@ -366,7 +454,6 @@ public class GameMaster : MonoBehaviour
             if (target.ConstructionCost.InConstruction)
             {
                 target.AddConstructionPoints(worker.BuildingSpeed);
-                Debug.Log(target.ConstructionCost.ConstructionPoints);
             }else if (target.Health.NotFull)
             {
                 target.Health.AddHealth(worker.BuildingSpeed);

@@ -165,6 +165,10 @@ namespace UnitsAndTechs
             unit.InitValues(Player, GameMaster.Instance.grid.FindClosestEmptyPos(unit, SpawnPoint).GridPosition);
         }
 
-        
+        public void Destroyed()
+        {
+            base.Destroyed();
+            //End Game or at least end game for this player
+        }
     }
 }

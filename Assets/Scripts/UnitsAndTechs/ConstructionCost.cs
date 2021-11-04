@@ -29,6 +29,11 @@
 
         public int ConstructionDifficulty => constructionDifficulty;
 
+        public ConstructionCost()
+        {
+            
+        }
+
         public ConstructionCost(int metal, int oil, int uranium, int energy, int science, int constructionDifficulty)
         {
             this.metal = metal;

@@ -63,4 +63,9 @@ public class MultipleObjectInformation : MonoBehaviour
             Destroy(gameObject);
         }
     }
+
+    public void EmptyView()
+    {
+        RemoveOldButtons();
+    }
 }

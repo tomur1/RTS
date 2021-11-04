@@ -42,6 +42,8 @@ public class Player
     private Metal metal;
     private Science science;
 
+    public Color Color => color;
+
     public void AddCapacity(int amount)
     {
         UnitCapacityLimit += amount;
@@ -135,10 +137,10 @@ public class Player
         buildings = new List<Building>();
         units = new List<Unit>();
         playerScore = 0;
-        Energy = new Energy(1000);
+        Energy = new Energy(10000);
         Uranium = new Uranium();
-        Oil = new Oil(1000);
-        Metal = new Metal(1000);
+        Oil = new Oil(10000);
+        Metal = new Metal(10000);
         Science = new Science();
         this.color = color;
     }

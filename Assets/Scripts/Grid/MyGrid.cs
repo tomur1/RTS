@@ -20,7 +20,7 @@ public class MyGrid
     private Vector3 originPos;
     
     private Cell[,] gridData;
-    public HashSet<IPlaceable> ElementsOnMap { get; }
+    private HashSet<IPlaceable> ElementsOnMap { get; }
 
     public MyGrid(int width, int height, float cellSize, Vector3 originPos)
     {
@@ -124,6 +124,10 @@ public class MyGrid
         }
         
         var takenCoords = CoordsTakenByElement(elementToAdd);
+        if (ElementsOnMap.Contains(elementToAdd))
+        {
+            throw new Exception("Cannot add the same element twice");
+        }
         ElementsOnMap.Add(elementToAdd);
         foreach (var takenCoord in takenCoords)
         {
@@ -135,12 +139,21 @@ public class MyGrid
     public void RemoveElement(IPlaceable elementToRemove)
     {
         var takenCoords = CoordsTakenByElement(elementToRemove);
+        if (ElementsOnMap.Contains(elementToRemove))
+        {
+            ElementsOnMap.Remove(elementToRemove);
+        }
         
         foreach (var takenCoord in takenCoords)
         {
             var cell = GetCellWithCoord(takenCoord);
             cell.Elements.Remove(elementToRemove);
         }
+    }
+
+    public HashSet<IPlaceable> GetElementsOnMap()
+    {
+        return new HashSet<IPlaceable>(ElementsOnMap);
     }
 
     public Cell FindClosestEmptyPos(IPlaceable element, Vector2Int targetCoord)

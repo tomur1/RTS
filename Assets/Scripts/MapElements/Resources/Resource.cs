@@ -4,7 +4,7 @@ using UnityEngine;
 
 public abstract class Resource
 {
-    protected int miningDifficulty;
+    private int miningDifficulty;
 
     public int MiningDifficulty
     {
@@ -42,6 +42,6 @@ public abstract class Resource
         }
     }
 
-    protected int collectedAmount;
-    protected int capacity;
+    private int collectedAmount;
+    private int capacity;
 }

@@ -9,6 +9,12 @@ namespace DefaultNamespace
 
         public IPlaceable Element => element;
 
+        //For serialization
+        public Health()
+        {
+            
+        }
+
         private Health(int startingAmount, int maxAmount, IPlaceable element)
         {
             AssignElement(element);

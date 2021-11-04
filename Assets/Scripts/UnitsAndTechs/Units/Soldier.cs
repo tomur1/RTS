@@ -12,7 +12,7 @@ public class Soldier : Unit
         ConstructionCost = new ConstructionCost(150, 0, 0, 0, 0, 20);
         Player = player;
     }
-    
+
     public override Vector2 GridSize { get; set; }
     public override void InitValues(Player player, Vector2Int coord)
     {

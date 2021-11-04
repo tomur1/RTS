@@ -73,7 +73,7 @@ public abstract class Building : IPlaceable
     public void Destroyed()
     {
         GameMaster.Instance.grid.RemoveElement(this);
-        Player.Buildings.Remove(this);
+        Player.RemoveBuilding(this);
         GameMaster.Instance.DestroyMapObject(MapObject);
     }
 

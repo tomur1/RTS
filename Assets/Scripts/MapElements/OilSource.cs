@@ -29,7 +29,8 @@ public class OilSource : IPlaceable
 
     public void Destroyed()
     {
-        throw new System.NotImplementedException();
+        GameMaster.Instance.grid.RemoveElement(this);
+        GameMaster.Instance.DestroyMapObject(MapObject);
     }
 
     public OilSource()

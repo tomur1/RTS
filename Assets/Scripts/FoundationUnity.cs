@@ -61,6 +61,7 @@ public class FoundationUnity : MonoBehaviour
             {
                 following = false;
                 Element.InitValuesFoundation(GameMaster.Instance.player, choosenCell.GridPosition);
+                GameMaster.Instance.MoveUnitWithAction(Worker, "RepairOrBuild", Element);
                 GameMaster.Instance.mode = Mode.Normal;
                 Destroy(this);
             }

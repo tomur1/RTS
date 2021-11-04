@@ -31,7 +31,7 @@ namespace UnitsAndTechs.Units
             
             GameMaster.Instance.grid.RemoveElement(this);
             GameMaster.Instance.StopCoroutinesForObject(this);
-            Player.Units.Remove(this);
+            Player.RemoveUnit(this);
             GameMaster.Instance.DestroyMapObject(MapObject);
         }
         
@@ -92,7 +92,6 @@ namespace UnitsAndTechs.Units
 
         public abstract int getRange();
         
-
         public List<int> GroupsNumbers()
         {
             return new List<int>(Groups.Keys);
